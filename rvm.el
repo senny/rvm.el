@@ -29,6 +29,15 @@
   :group 'rvm
   :type 'file)
 
+(defun rvm-switch ()
+  (interactive)
+  (let* ((new-ruby (ido-completing-read "Ruby Version: " (rvm/list)))
+         ;; (new-ruby-binary (assoc "ruby" (rvm/info new-ruby)))
+         (new-ruby-binary (rvm--ruby-binary new-ruby)))
+    (setq ruby-compilation-executable new-ruby-binary)
+    (setq ruby-command new-ruby-binary)
+    ))
+
 (defun rvm/list ()
   (let ((rubies (rvm--call-process "list"))
         (start 0)
@@ -43,16 +52,22 @@
         ))
     parsed-rubies))
 
-(defun rvm/info ()
-  (let ((info (rvm--call-process "info"))
-        (start 0)
-        (parsed-info '()))
-    (while (string-match "\s+\\(.+\\):\s+\"\\(.+\\)\"" info start)
-      (let ((info-key (match-string 1 info))
-            (info-value (match-string 2 info)))
-        (add-to-list 'parsed-info (cons info-key info-value))
-        (setq start (match-end 0))))
-    parsed-info))
+;; (defun rvm/info (&optional ruby-version)
+;;   (let ((info (rvm--call-process "info" ruby-version))
+;;         (start 0)
+;;         (parsed-info '()))
+;;     (while (string-match "\s+\\(.+\\):\s+\"\\(.+\\)\"" info start)
+;;       (let ((info-key (match-string 1 info))
+;;             (info-value (match-string 2 info)))
+;;         (add-to-list 'parsed-info (cons info-key info-value))
+;;         (setq start (match-end 0))))
+;;     parsed-info))
+
+(defun rvm--ruby-binary (ruby-version)
+  (let ((info (rvm--call-process "info" ruby-version)))
+    (string-match "ruby:.*\"\\(.+?/bin/ruby\\)\"" info)
+    (match-string 1 info)
+    ))
 
 (defun rvm--error-buffer (text)
   (unless rvm--supress-errors
@@ -67,7 +82,7 @@
 (defun rvm--call-process (&rest args)
   (with-temp-buffer
     (let* ((success (apply 'call-process rvm-executable nil t nil
-                           "-command" args))
+                           (delete nil args)))
            (output (buffer-substring-no-properties
                     (point-min) (point-max))))
       (if (= 0 success)

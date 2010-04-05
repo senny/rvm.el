@@ -1,4 +1,5 @@
 == In Git
+* switch between installed ruby implementations (only modifies ruby-command and ruby-compilation-executable)
 
 === New Features
 
