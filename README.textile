@@ -6,6 +6,10 @@ h2. Installation
 
 h2. Usage
 
+h3. Switch Ruby Version
+
+you can use the function @rvm-switch@ to use another ruby version within emacs.
+
 h2. Contribution
 
 1. Fork rvm.el
