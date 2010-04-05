@@ -29,13 +29,19 @@
   :group 'rvm
   :type 'file)
 
-(defun rvm-switch ()
+(defun rvm-use-default ()
+  "use the rvm-default ruby as the current ruby version"
   (interactive)
-  (let* ((new-ruby (ido-completing-read "Ruby Version: " (rvm/list)))
-         ;; (new-ruby-binary (assoc "ruby" (rvm/info new-ruby)))
+  (rvm-use (first (rvm/list))))
+
+(defun rvm-use (new-ruby)
+  "switch the current ruby version to any ruby, which is installed with rvm"
+  (interactive (list (ido-completing-read "Ruby Version: " (rvm/list))))
+  (let* (;; (new-ruby-binary (assoc "ruby" (rvm/info new-ruby)))
          (new-ruby-binary (rvm--ruby-binary new-ruby)))
     (setq ruby-compilation-executable new-ruby-binary)
     (setq ruby-command new-ruby-binary)
+    (message (concat "current Ruby: " new-ruby))
     ))
 
 (defun rvm/list ()
