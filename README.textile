@@ -4,6 +4,12 @@ h2. Overview
 
 h2. Installation
 
+just put rvm.el in your load-path and put the following in your .emacs
+<pre>
+(require 'rvm)
+(rvm-use-default) ;; use rvm's default ruby as default
+</pre>
+
 h2. Usage
 
 h3. Switch Ruby Version

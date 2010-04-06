@@ -24,10 +24,14 @@
 ;; "rvm/command-name", like rvm/list.
 
 (defcustom rvm-executable
-  (or (executable-find "rvm") (eclim-executable-find))
+  (or (executable-find "rvm") "~/.rvm/bin/rvm")
   "Location of RVM executable."
   :group 'rvm
   :type 'file)
+
+(defvar rvm--current-ruby-binary-path nil
+  "reflects the path to the current 'ruby' executable.
+This path gets added to the PATH variable and the exec-path list.")
 
 (defun rvm-use-default ()
   "use the rvm-default ruby as the current ruby version"
@@ -38,11 +42,18 @@
   "switch the current ruby version to any ruby, which is installed with rvm"
   (interactive (list (ido-completing-read "Ruby Version: " (rvm/list))))
   (let* (;; (new-ruby-binary (assoc "ruby" (rvm/info new-ruby)))
-         (new-ruby-binary (rvm--ruby-binary new-ruby)))
-    (setq ruby-compilation-executable new-ruby-binary)
-    (setq ruby-command new-ruby-binary)
-    (message (concat "current Ruby: " new-ruby))
-    ))
+         (new-ruby-binary (rvm--ruby-binary-path new-ruby)))
+    (if rvm--current-ruby-binary-path
+        (progn
+          (setenv "PATH" (replace-regexp-in-string
+                          (regexp-quote rvm--current-ruby-binary-path)
+                          new-ruby-binary
+                          (getenv "PATH")))
+          (setq exec-path (remove rvm--current-ruby-binary-path exec-path)))
+      (setenv "PATH" (concat new-ruby-binary ":" (getenv "PATH"))))
+    (add-to-list 'exec-path new-ruby-binary)
+    (setq rvm--current-ruby-binary-path new-ruby-binary))
+  (message (concat "current Ruby: " new-ruby)))
 
 (defun rvm/list ()
   (let ((rubies (rvm--call-process "list"))
@@ -69,11 +80,10 @@
 ;;         (setq start (match-end 0))))
 ;;     parsed-info))
 
-(defun rvm--ruby-binary (ruby-version)
+(defun rvm--ruby-binary-path (ruby-version)
   (let ((info (rvm--call-process "info" ruby-version)))
-    (string-match "ruby:.*\"\\(.+?/bin/ruby\\)\"" info)
-    (match-string 1 info)
-    ))
+    (string-match "MY_RUBY_HOME:\s+\"\\(.*?\\)\"" info)
+    (concat (match-string 1 info) "/bin")))
 
 (defun rvm--error-buffer (text)
   (unless rvm--supress-errors
@@ -94,3 +104,5 @@
       (if (= 0 success)
           output
         (rvm--error-buffer output)))))
+
+(provide 'rvm)

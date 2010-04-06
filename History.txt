@@ -1,5 +1,6 @@
 == In Git
-* switch between installed ruby implementations (only modifies ruby-command and ruby-compilation-executable)
+* switch between installed ruby implementations
+* use the default rvm ruby as default ruby within emacs
 
 === New Features
 
