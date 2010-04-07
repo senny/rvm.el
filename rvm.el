@@ -29,14 +29,33 @@
   :group 'rvm
   :type 'file)
 
+(defcustom rvm-configuration-file-name
+  ".rvmrc"
+  "RVM configuration file name"
+  :group 'rvm
+  :type 'string)
+
 (defvar rvm--current-ruby-binary-path nil
   "reflects the path to the current 'ruby' executable.
 This path gets added to the PATH variable and the exec-path list.")
 
+(defvar rvm--default-ruby nil
+  "the default ruby configured with rvm")
+
 (defun rvm-use-default ()
   "use the rvm-default ruby as the current ruby version"
   (interactive)
-  (rvm-use (first (rvm/list))))
+  (rvm-use rvm--default-ruby))
+
+(defun rvm-activate-corresponding-ruby ()
+  "activate the corresponding ruby version for the file in the current buffer.
+This function searches for an .rvmrc file and actiavtes the configured ruby.
+If no .rvmrc file is found, the default ruby is used insted."
+  (interactive)
+  (let* ((rvmrc-path (rvm--rvmrc-locate))
+         (rvmrc-ruby (if rvmrc-path (rvm--rvmrc-read-version rvmrc-path) nil))
+         (ruby-to-activate (or rvmrc-ruby rvm--default-ruby)))
+    (rvm-use ruby-to-activate)))
 
 (defun rvm-use (new-ruby)
   "switch the current ruby version to any ruby, which is installed with rvm"
@@ -55,6 +74,17 @@ This path gets added to the PATH variable and the exec-path list.")
     (setq rvm--current-ruby-binary-path new-ruby-binary))
   (message (concat "current Ruby: " new-ruby)))
 
+;; TODO: take buffer switching into account
+(defun rvm-autodetect-ruby ()
+  (interactive)
+  (add-hook 'ruby-mode-hook 'rvm-activate-corresponding-ruby)
+  (message "rvm.el is now autodetecting the ruby version"))
+
+(defun rvm-autodetect-ruby-stop ()
+  (interactive)
+  (remove-hook 'ruby-mode-hook 'rvm-activate-corresponding-ruby)
+  (message "stopped rvm.el from autodetecting ruby versions"))
+
 (defun rvm/list ()
   (let ((rubies (rvm--call-process "list"))
         (start 0)
@@ -69,16 +99,39 @@ This path gets added to the PATH variable and the exec-path list.")
         ))
     parsed-rubies))
 
-;; (defun rvm/info (&optional ruby-version)
-;;   (let ((info (rvm--call-process "info" ruby-version))
-;;         (start 0)
-;;         (parsed-info '()))
-;;     (while (string-match "\s+\\(.+\\):\s+\"\\(.+\\)\"" info start)
-;;       (let ((info-key (match-string 1 info))
-;;             (info-value (match-string 2 info)))
-;;         (add-to-list 'parsed-info (cons info-key info-value))
-;;         (setq start (match-end 0))))
-;;     parsed-info))
+(defun rvm/info (&optional ruby-version)
+  (let ((info (rvm--call-process "info" ruby-version))
+        (start 0)
+        (parsed-info '()))
+    (while (string-match "\s+\\(.+\\):\s+\"\\(.+\\)\"" info start)
+      (let ((info-key (match-string 1 info))
+            (info-value (match-string 2 info)))
+        (add-to-list 'parsed-info (cons info-key info-value))
+        (setq start (match-end 0))))
+    parsed-info))
+
+(defun rvm--default-ruby ()
+  (or rvm--default-ruby
+      (setq rvm--default-ruby
+            (first (rvm/list)))))
+
+(defun rvm--rvmrc-locate (&optional path)
+  "searches the directory tree for an .rvmrc configuration file"
+  (when (null path) (setq path default-directory))
+  (cond
+   ((equal (expand-file-name path) (expand-file-name "~")) nil)
+   ((equal (expand-file-name path) "/") nil)
+   ((member rvm-configuration-file-name (directory-files path))
+    (concat (expand-file-name path) "/.rvmrc"))
+   (t (rvm--rvmrc-locate (concat (file-name-as-directory path) "..")))))
+
+(defun rvm--rvmrc-read-version (path-to-rvmrc)
+  (with-temp-buffer
+    (insert-file-contents path-to-rvmrc)
+    (goto-char (point-min))
+    (if (re-search-forward "rvm\s+\\(.+\\)@" nil t)
+        (match-string 1)
+      nil)))
 
 (defun rvm--ruby-binary-path (ruby-version)
   (let ((info (rvm--call-process "info" ruby-version)))
