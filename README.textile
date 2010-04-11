@@ -12,7 +12,17 @@ h2. Usage
 
 just call the interactive function @rvm-activate-corresponding-ruby@ and rvm.el will change Emacs to use the right ruby version for the file in the current buffer. Remember that the new ruby version will be used for the whole Emacs session and not just the current file. If you want to switch to another ruby version manualy you can call @rvm-use@ instead.
 
-h2. Contribution
+h2. Community
+
+h3. Got a question?
+
+Just send me a message and i'll try to get to you as soon as possible.
+
+h3. Found a bug? 
+
+Please register a new issue.
+
+h3. Fixed something? 
 
 1. Fork rvm.el
 2. Create a topic branch - `git checkout -b my_branch`
