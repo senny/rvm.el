@@ -16,7 +16,7 @@ h2. Community
 
 h3. Got a question?
 
-Just send me a message and i'll try to get to you as soon as possible.
+Just send me a message and I'll try to get to you as soon as possible.
 
 h3. Found a bug? 
 
