@@ -39,13 +39,10 @@
   "reflects the path to the current 'ruby' executable.
 This path gets added to the PATH variable and the exec-path list.")
 
-(defvar rvm--default-ruby nil
-  "the default ruby configured with rvm")
-
 (defun rvm-use-default ()
   "use the rvm-default ruby as the current ruby version"
   (interactive)
-  (rvm-use rvm--default-ruby))
+  (rvm--set-ruby (rvm--ruby-binary-path "--default")))
 
 (defun rvm-activate-corresponding-ruby ()
   "activate the corresponding ruby version for the file in the current buffer.
@@ -53,25 +50,16 @@ This function searches for an .rvmrc file and actiavtes the configured ruby.
 If no .rvmrc file is found, the default ruby is used insted."
   (interactive)
   (let* ((rvmrc-path (rvm--rvmrc-locate))
-         (rvmrc-ruby (if rvmrc-path (rvm--rvmrc-read-version rvmrc-path) nil))
-         (ruby-to-activate (or rvmrc-ruby rvm--default-ruby)))
-    (rvm-use ruby-to-activate)))
+         (rvmrc-ruby (if rvmrc-path (rvm--rvmrc-read-version rvmrc-path) nil)))
+    (if rvmrc-ruby (rvm-use rvmrc-ruby)
+      (rvm-use-default))))
 
 (defun rvm-use (new-ruby)
   "switch the current ruby version to any ruby, which is installed with rvm"
   (interactive (list (ido-completing-read "Ruby Version: " (rvm/list))))
   (let* (;; (new-ruby-binary (assoc "ruby" (rvm/info new-ruby)))
          (new-ruby-binary (rvm--ruby-binary-path new-ruby)))
-    (if rvm--current-ruby-binary-path
-        (progn
-          (setenv "PATH" (replace-regexp-in-string
-                          (regexp-quote rvm--current-ruby-binary-path)
-                          new-ruby-binary
-                          (getenv "PATH")))
-          (setq exec-path (remove rvm--current-ruby-binary-path exec-path)))
-      (setenv "PATH" (concat new-ruby-binary ":" (getenv "PATH"))))
-    (add-to-list 'exec-path new-ruby-binary)
-    (setq rvm--current-ruby-binary-path new-ruby-binary))
+    (rvm--set-ruby new-ruby-binary))
   (message (concat "current Ruby: " new-ruby)))
 
 ;; TODO: take buffer switching into account
@@ -88,15 +76,19 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm/list ()
   (let ((rubies (rvm--call-process "list"))
         (start 0)
-        (parsed-rubies '()))
+        (parsed-rubies '())
+        (current-ruby '()))
     (while (string-match "\s*\\(=>\\)?\s*\\(.+?\\)\s*\\[\\(.+\\)\\]\s*$" rubies start)
       (let ((ruby-version (match-string 2 rubies))
             (ruby-platform (match-string 3 rubies))
             (ruby-current-version (match-string 1 rubies)))
+        (add-to-list 'current-ruby ruby-current-version)
         (if ruby-current-version (add-to-list 'parsed-rubies ruby-version)
           (add-to-list 'parsed-rubies ruby-version t))
-        (setq start (match-end 0))
-        ))
+        (setq start (match-end 0))))
+    (when (= (length (delete nil current-ruby)) 0)
+      (delete "system" parsed-rubies)
+      (add-to-list 'parsed-rubies "system"))
     parsed-rubies))
 
 (defun rvm/info (&optional ruby-version)
@@ -110,10 +102,17 @@ If no .rvmrc file is found, the default ruby is used insted."
         (setq start (match-end 0))))
     parsed-info))
 
-(defun rvm--default-ruby ()
-  (or rvm--default-ruby
-      (setq rvm--default-ruby
-            (first (rvm/list)))))
+(defun rvm--set-ruby (ruby-binary)
+  (if (and rvm--current-ruby-binary-path (not (string= rvm--current-ruby-binary-path "/bin")))
+      (progn
+        (setenv "PATH" (replace-regexp-in-string
+                        (regexp-quote rvm--current-ruby-binary-path)
+                        ruby-binary
+                        (getenv "PATH")))
+        (setq exec-path (remove rvm--current-ruby-binary-path exec-path)))
+    (setenv "PATH" (concat ruby-binary ":" (getenv "PATH"))))
+  (add-to-list 'exec-path ruby-binary)
+  (setq rvm--current-ruby-binary-path ruby-binary))
 
 (defun rvm--rvmrc-locate (&optional path)
   "searches the directory tree for an .rvmrc configuration file"
