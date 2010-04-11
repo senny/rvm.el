@@ -35,6 +35,11 @@
   :group 'rvm
   :type 'string)
 
+(defcustom rvm-supress-errors nil
+  "when checked, rvm.el ignores errors when shelling out to the rvm binary."
+  :group 'rvm
+  :type 'boolean)
+
 (defvar rvm--current-ruby-binary-path nil
   "reflects the path to the current 'ruby' executable.
 This path gets added to the PATH variable and the exec-path list.")
@@ -139,7 +144,7 @@ If no .rvmrc file is found, the default ruby is used insted."
     (concat (match-string 1 info) "/bin")))
 
 (defun rvm--error-buffer (text)
-  (unless rvm--supress-errors
+  (unless rvm-supress-errors
     (let ((errbuf (get-buffer-create "*RVM errors*")))
       (set-buffer errbuf)
       (setq buffer-read-only nil)
