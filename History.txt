@@ -2,6 +2,7 @@
 * switch between installed ruby implementations
 * use the default rvm ruby as default ruby within emacs
 * rvm.el can now detect the right version to use for the current buffer (takes .rvmrc into account)
+* support for Gemsets
 
 === New Features
 

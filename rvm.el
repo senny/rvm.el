@@ -35,6 +35,12 @@
   :group 'rvm
   :type 'string)
 
+(defvar rvm--gemset-default "global"
+  "default gemset to use.")
+
+(defvar rvm--gemset-separator "@"
+  "character that separates the ruby version from the gemset.")
+
 (defvar rvm--current-ruby-binary-path nil
   "reflects the path to the current 'ruby' executable.
 This path gets added to the PATH variable and the exec-path list.")
@@ -42,7 +48,8 @@ This path gets added to the PATH variable and the exec-path list.")
 (defun rvm-use-default ()
   "use the rvm-default ruby as the current ruby version"
   (interactive)
-  (rvm--set-ruby (rvm--ruby-binary-path "--default")))
+  (rvm--set-ruby (rvm--ruby-binary-path "--default"))
+  (rvm--set-gemhome (rvm--ruby-gemhome-path "--default") rvm--gemset-default))
 
 (defun rvm-activate-corresponding-ruby ()
   "activate the corresponding ruby version for the file in the current buffer.
@@ -50,17 +57,20 @@ This function searches for an .rvmrc file and actiavtes the configured ruby.
 If no .rvmrc file is found, the default ruby is used insted."
   (interactive)
   (let* ((rvmrc-path (rvm--rvmrc-locate))
-         (rvmrc-ruby (if rvmrc-path (rvm--rvmrc-read-version rvmrc-path) nil)))
-    (if rvmrc-ruby (rvm-use rvmrc-ruby)
+         (rvmrc-info (if rvmrc-path (rvm--rvmrc-read-version rvmrc-path) nil)))
+    (if rvmrc-info (rvm-use (first rvmrc-info) (second rvmrc-info))
       (rvm-use-default))))
 
-(defun rvm-use (new-ruby)
+(defun rvm-use (new-ruby new-gemset)
   "switch the current ruby version to any ruby, which is installed with rvm"
-  (interactive (list (ido-completing-read "Ruby Version: " (rvm/list))))
-  (let* (;; (new-ruby-binary (assoc "ruby" (rvm/info new-ruby)))
-         (new-ruby-binary (rvm--ruby-binary-path new-ruby)))
-    (rvm--set-ruby new-ruby-binary))
-  (message (concat "current Ruby: " new-ruby)))
+  (interactive (let* ((picked-ruby (ido-completing-read "Ruby Version: " (rvm/list)))
+                      (picked-gemset (ido-completing-read ", Gemset: " (rvm/gemset-list picked-ruby))))
+                 (list picked-ruby picked-gemset)))
+  (let* ((new-ruby-binary (rvm--ruby-binary-path new-ruby))
+         (new-gemhome (rvm--ruby-gemhome-path new-ruby)))
+    (rvm--set-ruby new-ruby-binary)
+    (rvm--set-gemhome new-gemhome new-gemset))
+  (message (concat "Ruby: " new-ruby " Gemset: " new-gemset)))
 
 ;; TODO: take buffer switching into account
 (defun rvm-autodetect-ruby ()
@@ -91,8 +101,17 @@ If no .rvmrc file is found, the default ruby is used insted."
       (add-to-list 'parsed-rubies "system"))
     parsed-rubies))
 
+(defun rvm/gemset-list (ruby-version)
+  (let* ((gemset-result (rvm--call-process ruby-version "gemset list"))
+         (gemset-lines (split-string gemset-result "\n"))
+         (parsed-gemsets '()))
+    (loop for i from 1 to (length gemset-lines) do
+          (let ((gemset (nth i gemset-lines)))
+            (when (> (length gemset) 0) (add-to-list 'parsed-gemsets gemset))))
+    parsed-gemsets))
+
 (defun rvm/info (&optional ruby-version)
-  (let ((info (rvm--call-process "info" ruby-version))
+  (let ((info (rvm--call-process "info"))
         (start 0)
         (parsed-info '()))
     (while (string-match "\s+\\(.+\\):\s+\"\\(.+\\)\"" info start)
@@ -128,14 +147,26 @@ If no .rvmrc file is found, the default ruby is used insted."
   (with-temp-buffer
     (insert-file-contents path-to-rvmrc)
     (goto-char (point-min))
-    (if (re-search-forward "rvm\s+\\(.+\\)@" nil t)
-        (match-string 1)
+    (if (re-search-forward
+         (concat "rvm\s+\\(.+\\)" rvm--gemset-separator "\\(.*\\)") nil t)
+        (list (match-string 1) (match-string 2))
       nil)))
+
+(defun rvm--set-gemhome (gemhome gemset)
+  (when (and gemhome gemset)
+    (setenv "GEM_HOME" gemhome)
+    (setenv "GEM_PATH" (concat gemhome ":" gemhome rvm--gemset-separator gemset))
+    (setenv "BUNDLE_PATH" gemhome)))
 
 (defun rvm--ruby-binary-path (ruby-version)
   (let ((info (rvm--call-process "info" ruby-version)))
     (string-match "MY_RUBY_HOME:\s+\"\\(.*?\\)\"" info)
     (concat (match-string 1 info) "/bin")))
+
+(defun rvm--ruby-gemhome-path (ruby-version)
+  (let ((info (rvm--call-process "info" ruby-version)))
+    (string-match "GEM_HOME:\s+\"\\(.*?\\)\"" info)
+    (match-string 1 info)))
 
 (defun rvm--call-process (&rest args)
   (with-temp-buffer
