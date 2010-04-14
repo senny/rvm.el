@@ -64,12 +64,13 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm-use (new-ruby new-gemset)
   "switch the current ruby version to any ruby, which is installed with rvm"
   (interactive (let* ((picked-ruby (ido-completing-read "Ruby Version: " (rvm/list)))
-                      (picked-gemset (ido-completing-read ", Gemset: " (rvm/gemset-list picked-ruby))))
+                      (picked-gemset (ido-completing-read "Gemset: " (rvm/gemset-list picked-ruby))))
                  (list picked-ruby picked-gemset)))
-  (let* ((new-ruby-binary (rvm--ruby-binary-path new-ruby))
-         (new-gemhome (rvm--ruby-gemhome-path new-ruby)))
+  (let* ((ruby-info (rvm/info new-ruby))
+         (new-ruby-binary (cdr (assoc "ruby" ruby-info)))
+         (new-ruby-gemhome (cdr (assoc "GEM_HOME" ruby-info))))
     (rvm--set-ruby new-ruby-binary)
-    (rvm--set-gemhome new-gemhome new-gemset))
+    (rvm--set-gemhome new-ruby-gemhome new-gemset))
   (message (concat "Ruby: " new-ruby " Gemset: " new-gemset)))
 
 ;; TODO: take buffer switching into account
@@ -111,7 +112,7 @@ If no .rvmrc file is found, the default ruby is used insted."
     parsed-gemsets))
 
 (defun rvm/info (&optional ruby-version)
-  (let ((info (rvm--call-process "info"))
+  (let ((info (rvm--call-process "info" ruby-version))
         (start 0)
         (parsed-info '()))
     (while (string-match "\s+\\(.+\\):\s+\"\\(.+\\)\"" info start)
