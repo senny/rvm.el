@@ -48,9 +48,8 @@ This path gets added to the PATH variable and the exec-path list.")
 (defun rvm-use-default ()
   "use the rvm-default ruby as the current ruby version"
   (interactive)
-  (rvm--set-ruby (rvm--ruby-binary-path "--default"))
-  (rvm--set-gemhome (rvm--ruby-gemhome-path "--default") rvm--gemset-default))
-
+  (rvm-use (rvm--ruby-default) rvm--gemset-default))
+  
 (defun rvm-activate-corresponding-ruby ()
   "activate the corresponding ruby version for the file in the current buffer.
 This function searches for an .rvmrc file and actiavtes the configured ruby.
@@ -84,8 +83,8 @@ If no .rvmrc file is found, the default ruby is used insted."
   (remove-hook 'ruby-mode-hook 'rvm-activate-corresponding-ruby)
   (message "stopped rvm.el from autodetecting ruby versions"))
 
-(defun rvm/list ()
-  (let ((rubies (rvm--call-process "list"))
+(defun rvm/list (&optional default-ruby)
+  (let ((rubies (rvm--call-process "list" (when default-ruby "default")))
         (start 0)
         (parsed-rubies '())
         (current-ruby '()))
@@ -97,9 +96,6 @@ If no .rvmrc file is found, the default ruby is used insted."
         (if ruby-current-version (add-to-list 'parsed-rubies ruby-version)
           (add-to-list 'parsed-rubies ruby-version t))
         (setq start (match-end 0))))
-    (when (= (length (delete nil current-ruby)) 0)
-      (delete "system" parsed-rubies)
-      (add-to-list 'parsed-rubies "system"))
     parsed-rubies))
 
 (defun rvm/gemset-list (ruby-version)
@@ -159,15 +155,8 @@ If no .rvmrc file is found, the default ruby is used insted."
     (setenv "GEM_PATH" (concat gemhome ":" gemhome rvm--gemset-separator gemset))
     (setenv "BUNDLE_PATH" gemhome)))
 
-(defun rvm--ruby-binary-path (ruby-version)
-  (let ((info (rvm--call-process "info" ruby-version)))
-    (string-match "MY_RUBY_HOME:\s+\"\\(.*?\\)\"" info)
-    (concat (match-string 1 info) "/bin")))
-
-(defun rvm--ruby-gemhome-path (ruby-version)
-  (let ((info (rvm--call-process "info" ruby-version)))
-    (string-match "GEM_HOME:\s+\"\\(.*?\\)\"" info)
-    (match-string 1 info)))
+(defun rvm--ruby-default ()
+  (car (rvm/list t)))
 
 (defun rvm--call-process (&rest args)
   (with-temp-buffer
