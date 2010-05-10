@@ -68,7 +68,7 @@ If no .rvmrc file is found, the default ruby is used insted."
   (let* ((ruby-info (rvm/info new-ruby))
          (new-ruby-binary (cdr (assoc "ruby" ruby-info)))
          (new-ruby-gemhome (cdr (assoc "GEM_HOME" ruby-info))))
-    (rvm--set-ruby new-ruby-binary)
+    (rvm--set-ruby (file-name-directory new-ruby-binary))
     (rvm--set-gemhome new-ruby-gemhome new-gemset))
   (message (concat "Ruby: " new-ruby " Gemset: " new-gemset)))
 
@@ -151,9 +151,10 @@ If no .rvmrc file is found, the default ruby is used insted."
 
 (defun rvm--set-gemhome (gemhome gemset)
   (when (and gemhome gemset)
-    (setenv "GEM_HOME" gemhome)
-    (setenv "GEM_PATH" (concat gemhome ":" gemhome rvm--gemset-separator gemset))
-    (setenv "BUNDLE_PATH" gemhome)))
+    (let ((current-gemset (concat gemhome rvm--gemset-separator gemset)))
+      (setenv "GEM_HOME" current-gemset)
+      (setenv "GEM_PATH" (concat current-gemset ":" gemhome rvm--gemset-separator "global"))
+      (setenv "BUNDLE_PATH" current-gemset))))
 
 (defun rvm--ruby-default ()
   (car (rvm/list t)))

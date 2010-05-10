@@ -7,3 +7,4 @@
 === New Features
 
 === Bugfixes
+* Fixed setting of gemset path and ruby path
