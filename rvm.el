@@ -45,6 +45,10 @@
   "reflects the path to the current 'ruby' executable.
 This path gets added to the PATH variable and the exec-path list.")
 
+(defvar rvm--current-gem-binary-path nil
+  "reflects the path to the current 'rubygems' executables.
+This path gets added to the PATH variable and the exec-path list.")
+
 (defun rvm-use-default ()
   "use the rvm-default ruby as the current ruby version"
   (interactive)
@@ -118,17 +122,20 @@ If no .rvmrc file is found, the default ruby is used insted."
         (setq start (match-end 0))))
     parsed-info))
 
-(defun rvm--set-ruby (ruby-binary)
-  (if (and rvm--current-ruby-binary-path (not (string= rvm--current-ruby-binary-path "/bin")))
+(defun rvm--change-path (current-binary-var new-binary)
+  (if (and (eval current-binary-var) (not (string= (eval current-binary-var) "/bin")))
       (progn
-        (setenv "PATH" (replace-regexp-in-string
-                        (regexp-quote rvm--current-ruby-binary-path)
-                        ruby-binary
-                        (getenv "PATH")))
-        (setq exec-path (remove rvm--current-ruby-binary-path exec-path)))
-    (setenv "PATH" (concat ruby-binary ":" (getenv "PATH"))))
-  (add-to-list 'exec-path ruby-binary)
-  (setq rvm--current-ruby-binary-path ruby-binary))
+	(setenv "PATH" (replace-regexp-in-string
+			(regexp-quote (eval current-binary-var))
+			new-binary
+			(getenv "PATH")))
+	(setq exec-path (remove (eval current-binary-var) exec-path)))
+    (setenv "PATH" (concat new-binary ":" (getenv "PATH"))))
+  (add-to-list 'exec-path new-binary)
+  (set current-binary-var new-binary))
+
+(defun rvm--set-ruby (ruby-binary)
+  (rvm--change-path 'rvm--current-ruby-binary-path ruby-binary))
 
 (defun rvm--rvmrc-locate (&optional path)
   "searches the directory tree for an .rvmrc configuration file"
@@ -154,7 +161,8 @@ If no .rvmrc file is found, the default ruby is used insted."
     (let ((current-gemset (concat gemhome rvm--gemset-separator gemset)))
       (setenv "GEM_HOME" current-gemset)
       (setenv "GEM_PATH" (concat current-gemset ":" gemhome rvm--gemset-separator "global"))
-      (setenv "BUNDLE_PATH" current-gemset))))
+      (setenv "BUNDLE_PATH" current-gemset)
+      (rvm--change-path 'rvm--current-gem-binary-path (concat current-gemset "/bin:" gemhome rvm--gemset-separator "global/bin")))))
 
 (defun rvm--ruby-default ()
   (car (rvm/list t)))
