@@ -35,8 +35,8 @@
   :group 'rvm
   :type 'string)
 
-(defvar rvm--gemset-default "global"
-  "default gemset to use.")
+(defvar rvm--gemset-default "*default*"
+  "the default gemset per ruby interpreter")
 
 (defvar rvm--gemset-separator "@"
   "character that separates the ruby version from the gemset.")
@@ -105,10 +105,10 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm/gemset-list (ruby-version)
   (let* ((gemset-result (rvm--call-process ruby-version "gemset list"))
          (gemset-lines (split-string gemset-result "\n"))
-         (parsed-gemsets '()))
+         (parsed-gemsets (list rvm--gemset-default)))
     (loop for i from 1 to (length gemset-lines) do
           (let ((gemset (nth i gemset-lines)))
-            (when (> (length gemset) 0) (add-to-list 'parsed-gemsets gemset))))
+            (when (> (length gemset) 0) (add-to-list 'parsed-gemsets gemset t))))
     parsed-gemsets))
 
 (defun rvm/info (&optional ruby-version)
@@ -158,7 +158,10 @@ If no .rvmrc file is found, the default ruby is used insted."
 
 (defun rvm--set-gemhome (gemhome gemset)
   (when (and gemhome gemset)
-    (let ((current-gemset (concat gemhome rvm--gemset-separator gemset)))
+    (let ((current-gemset (if (string= gemset rvm--gemset-default)
+                              gemhome
+                              (concat gemhome rvm--gemset-separator gemset))))
+      (message (concat "GEMSET: " current-gemset))
       (setenv "GEM_HOME" current-gemset)
       (setenv "GEM_PATH" (concat current-gemset ":" gemhome rvm--gemset-separator "global"))
       (setenv "BUNDLE_PATH" current-gemset)
