@@ -133,6 +133,7 @@ If no .rvmrc file is found, the default ruby is used insted."
         (setq exec-path (remove (eval current-binary-var) exec-path)))
     (setenv "PATH" (concat new-binary ":" (getenv "PATH"))))
   (add-to-list 'exec-path new-binary)
+  (setq eshell-path-env (getenv "PATH"))
   (set current-binary-var new-binary))
 
 (defun rvm--set-ruby (ruby-binary)
