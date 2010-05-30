@@ -1,11 +1,22 @@
-;; rvm.el --- an interface to the Eclipse IDE.
-;;
-;; Copyright (C) 2010  Yves Senn <yves senn * gmx ch>
-;;
-;; This program is free software: you can redistribute it and/or modify
+;;; rvm.el --- Emacs integration for rvm
+
+;; Copyright (C) 2010 Yves Senn
+
+;; Author: Yves Senn <yves.senn@gmx.ch>
+;; URL: http://www.emacswiki.org/emacs/RvmEl
+;; Version: 1.1
+;; Created: 5 April 2010
+;; Keywords: ruby rvm
+;; EmacsWiki: RvmEl
+
+;; This file is NOT part of GNU Emacs.
+
+;;; License:
+
+;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
-;; the Free Software Foundation, either version 3 of the License, or
-;; (at your option) any later version.
+;; the Free Software Foundation; either version 3, or (at your option)
+;; any later version.
 ;;
 ;; This program is distributed in the hope that it will be useful,
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,15 +24,19 @@
 ;; GNU General Public License for more details.
 ;;
 ;; You should have received a copy of the GNU General Public License
-;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
-;;
-;;; Contributors
-;;
-;;; Conventions
-;;
-;; Conventions used in this file: Name internal variables and functions
-;; "rvm--<descriptive-name>", and name rvm command invocations
-;; "rvm/command-name", like rvm/list.
+;; along with GNU Emacs; see the file COPYING.  If not, write to the
+;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+;; Boston, MA 02110-1301, USA.
+
+;;; Commentary:
+
+;; M-x rvm-use-default prepares the current Emacs session to use
+;; the default ruby configured with rvm.
+
+;; M-x rvm-use allows you to switch the current session to the ruby
+;; implementation of your choice. You can also change the active gemset.
+
+;;; Code:
 
 (defcustom rvm-executable
   (or (executable-find "rvm") "~/.rvm/bin/rvm")
@@ -188,3 +203,4 @@ If no .rvmrc file is found, the default ruby is used insted."
         (message output)))))
 
 (provide 'rvm)
+;;; rvm.el ends here
