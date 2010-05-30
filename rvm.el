@@ -64,11 +64,13 @@ This path gets added to the PATH variable and the exec-path list.")
   "reflects the path to the current 'rubygems' executables.
 This path gets added to the PATH variable and the exec-path list.")
 
+;;;###autoload
 (defun rvm-use-default ()
   "use the rvm-default ruby as the current ruby version"
   (interactive)
   (rvm-use (rvm--ruby-default) rvm--gemset-default))
 
+;;;###autoload
 (defun rvm-activate-corresponding-ruby ()
   "activate the corresponding ruby version for the file in the current buffer.
 This function searches for an .rvmrc file and actiavtes the configured ruby.
@@ -79,6 +81,7 @@ If no .rvmrc file is found, the default ruby is used insted."
     (if rvmrc-info (rvm-use (first rvmrc-info) (second rvmrc-info))
       (rvm-use-default))))
 
+;;;###autoload
 (defun rvm-use (new-ruby new-gemset)
   "switch the current ruby version to any ruby, which is installed with rvm"
   (interactive (let* ((picked-ruby (ido-completing-read "Ruby Version: " (rvm/list)))
