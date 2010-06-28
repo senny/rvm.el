@@ -2,6 +2,7 @@
 
 === New Features
 * open sources in a gem from the current gemset
+* ability to change the used completion function
 
 === Bugfixes
 

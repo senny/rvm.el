@@ -50,6 +50,12 @@
   :group 'rvm
   :type 'string)
 
+(defcustom rvm-interactive-completion-function
+  (if ido-mode 'ido-completing-read 'completing-read)
+  "The function which is used by rvm.el to interactivly complete user input"
+  :group 'rvm
+  :type 'function)
+
 (defvar rvm--gemset-default "*default*"
   "the default gemset per ruby interpreter")
 
@@ -84,8 +90,8 @@ If no .rvmrc file is found, the default ruby is used insted."
 ;;;###autoload
 (defun rvm-use (new-ruby new-gemset)
   "switch the current ruby version to any ruby, which is installed with rvm"
-  (interactive (let* ((picked-ruby (ido-completing-read "Ruby Version: " (rvm/list)))
-                      (picked-gemset (ido-completing-read "Gemset: " (rvm/gemset-list picked-ruby))))
+  (interactive (let* ((picked-ruby (rvm--completing-read "Ruby Version: " (rvm/list)))
+                      (picked-gemset (rvm--completing-read "Gemset: " (rvm/gemset-list picked-ruby))))
                  (list picked-ruby picked-gemset)))
   (let* ((ruby-info (rvm/info new-ruby))
          (new-ruby-binary (cdr (assoc "ruby" ruby-info)))
@@ -99,7 +105,7 @@ If no .rvmrc file is found, the default ruby is used insted."
   (interactive (list (rvm--current-gemhome)))
   (let ((gem-dir (concat gemhome "/gems/")))
     (find-file (ido-open-find-directory-files
-                (concat gem-dir (ido-completing-read "Gem: "
+                (concat gem-dir (rvm--completing-read "Gem: "
                                                      (directory-files gem-dir nil "^[^.]")))))))
 
 ;; TODO: take buffer switching into account
@@ -148,6 +154,9 @@ If no .rvmrc file is found, the default ruby is used insted."
         (add-to-list 'parsed-info (cons info-key info-value))
         (setq start (match-end 0))))
     parsed-info))
+
+(defun rvm--completing-read (prompt options)
+  (funcall rvm-interactive-completion-function prompt options))
 
 (defun rvm--current-gemhome ()
   (getenv "GEM_HOME"))
