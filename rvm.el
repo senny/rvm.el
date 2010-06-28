@@ -94,6 +94,14 @@ If no .rvmrc file is found, the default ruby is used insted."
     (rvm--set-gemhome new-ruby-gemhome new-gemset))
   (message (concat "Ruby: " new-ruby " Gemset: " new-gemset)))
 
+;;;###autoload
+(defun rvm-open-gem (gemhome)
+  (interactive (list (rvm--current-gemhome)))
+  (let ((gem-dir (concat gemhome "/gems/")))
+    (find-file (ido-open-find-directory-files
+                (concat gem-dir (ido-completing-read "Gem: "
+                                                     (directory-files gem-dir nil "^[^.]")))))))
+
 ;; TODO: take buffer switching into account
 (defun rvm-autodetect-ruby ()
   (interactive)
@@ -140,6 +148,9 @@ If no .rvmrc file is found, the default ruby is used insted."
         (add-to-list 'parsed-info (cons info-key info-value))
         (setq start (match-end 0))))
     parsed-info))
+
+(defun rvm--current-gemhome ()
+  (getenv "GEM_HOME"))
 
 (defun rvm--change-path (current-binary-var new-binary)
   (if (and (eval current-binary-var) (not (string= (eval current-binary-var) "/bin")))

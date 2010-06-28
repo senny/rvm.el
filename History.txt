@@ -1,6 +1,7 @@
 == In Git
 
 === New Features
+* open sources in a gem from the current gemset
 
 === Bugfixes
 
