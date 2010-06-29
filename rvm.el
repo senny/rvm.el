@@ -102,7 +102,7 @@ If no .rvmrc file is found, the default ruby is used insted."
 
 ;;;###autoload
 (defun rvm-open-gem (gemhome)
-  (interactive (list (rvm--current-gemhome)))
+  (interactive (list (rvm--emacs-gemhome)))
   (let ((gem-dir (concat gemhome "/gems/")))
     (find-file (ido-open-find-directory-files
                 (concat gem-dir (rvm--completing-read "Gem: "
@@ -135,7 +135,7 @@ If no .rvmrc file is found, the default ruby is used insted."
     parsed-rubies))
 
 (defun rvm/gemset-list (ruby-version)
-  (let* ((gemset-result (rvm--call-process ruby-version "gemset list"))
+  (let* ((gemset-result (rvm--call-process "gemset list" ruby-version))
          (gemset-lines (split-string gemset-result "\n"))
          (parsed-gemsets (list rvm--gemset-default)))
     (loop for i from 1 to (length gemset-lines) do
@@ -158,8 +158,14 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm--completing-read (prompt options)
   (funcall rvm-interactive-completion-function prompt options))
 
-(defun rvm--current-gemhome ()
+(defun rvm--emacs-ruby-binary ()
+  rvm--current-ruby-binary-path)
+
+(defun rvm--emacs-gemhome ()
   (getenv "GEM_HOME"))
+
+(defun rvm--emacs-gempath ()
+  (getenv "GEM_PATH"))
 
 (defun rvm--change-path (current-binary-var new-binary)
   (if (and (eval current-binary-var) (not (string= (eval current-binary-var) "/bin")))
