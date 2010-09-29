@@ -106,13 +106,11 @@ If no .rvmrc file is found, the default ruby is used insted."
   (let* ((gems-dir (concat gemhome "/gems/"))
          (gem-name (rvm--completing-read "Gem: "
                                          (directory-files gems-dir nil "^[^.]")))
-         (gem-file (ido-find-file-in-dir
-                    (concat gems-dir gem-name))))
-    (if (and (featurep 'perspective) persp-mode)
+         (gem-dir (concat gems-dir gem-name)))
+    (when (and (featurep 'perspective) persp-mode)
         (let ((initialize (not (gethash gem-name perspectives-hash))))
-          (persp-switch gem-name)
-          (when initialize (find-file gem-file)))
-      (find-file gem-file))))
+          (persp-switch gem-name)))
+      (ido-find-file-in-dir gem-dir)))
 
 ;;;; TODO: take buffer switching into account
 (defun rvm-autodetect-ruby ()
