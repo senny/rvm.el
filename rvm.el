@@ -56,6 +56,12 @@
   :group 'rvm
   :type 'function)
 
+(defcustom rvm-interactive-find-file-function
+  (if ido-mode 'ido-find-file 'find-file)
+  "The function which is used by rvm.el to interactivly open files"
+  :group 'rvm
+  :type 'function)
+
 (defvar rvm--gemset-default "*default*"
   "the default gemset per ruby interpreter")
 
@@ -116,7 +122,7 @@ If no .rvmrc file is found, the default ruby is used insted."
     (when (and (featurep 'perspective) persp-mode)
       (let ((initialize (not (gethash gem-name perspectives-hash))))
         (persp-switch gem-name)))
-    (ido-find-file-in-dir gem-dir)))
+    (rvm--find-file gem-dir)))
 
 ;;;; TODO: take buffer switching into account
 (defun rvm-autodetect-ruby ()
@@ -168,6 +174,10 @@ If no .rvmrc file is found, the default ruby is used insted."
 
 (defun rvm--completing-read (prompt options)
   (funcall rvm-interactive-completion-function prompt options))
+
+(defun rvm--find-file (directory)
+  (let ((default-directory directory))
+    (call-interactively rvm-interactive-find-file-function)))
 
 (defun rvm--emacs-ruby-binary ()
   rvm--current-ruby-binary-path)
