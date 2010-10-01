@@ -62,7 +62,7 @@
   :group 'rvm
   :type 'function)
 
-(defvar rvm--gemset-default "*default*"
+(defvar rvm--gemset-default "global"
   "the default gemset per ruby interpreter")
 
 (defvar rvm--gemset-separator "@"
@@ -153,7 +153,7 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm/gemset-list (ruby-version)
   (let* ((gemset-result (rvm--call-process ruby-version "gemset" "list"))
          (gemset-lines (split-string gemset-result "\n"))
-         (parsed-gemsets (list rvm--gemset-default)))
+         (parsed-gemsets (list)))
     (loop for i from 2 to (length gemset-lines) do
           (let ((gemset (nth i gemset-lines)))
             (when (and (> (length gemset) 0)
@@ -231,9 +231,7 @@ If no .rvmrc file is found, the default ruby is used insted."
 
 (defun rvm--set-gemhome (gemhome gemset)
   (if (and gemhome gemset)
-      (let ((current-gemset (if (string= gemset rvm--gemset-default)
-                                gemhome
-                              (concat gemhome rvm--gemset-separator gemset))))
+      (let ((current-gemset (concat gemhome rvm--gemset-separator gemset)))
         (setenv "GEM_HOME" current-gemset)
         (setenv "GEM_PATH" (concat current-gemset ":" gemhome
                                    rvm--gemset-separator "global"))
