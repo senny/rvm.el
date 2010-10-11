@@ -233,9 +233,9 @@ If no .rvmrc file is found, the default ruby is used insted."
   (if (and gemhome gemset)
       (let ((current-gemset (concat gemhome rvm--gemset-separator gemset)))
         (setenv "GEM_HOME" current-gemset)
-        (setenv "GEM_PATH" (concat current-gemset ":" gemhome
-                                   rvm--gemset-separator "global"))
-        (setenv "BUNDLE_PATH" current-gemset)
+        (setenv "GEM_PATH" (concat gemhome ":" current-gemset))
+        (setenv "BUNDLE_PATH" (if (string= gemset rvm--gemset-default)
+                                  gemhome current-gemset))
         (rvm--change-path 'rvm--current-gem-binary-path
                           (list (concat current-gemset "/bin")
                                 (concat gemhome
