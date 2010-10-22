@@ -237,7 +237,9 @@ If no .rvmrc file is found, the default ruby is used insted."
         (setenv "BUNDLE_PATH" (if (string= gemset rvm--gemset-default)
                                   gemhome current-gemset))
         (rvm--change-path 'rvm--current-gem-binary-path
-                          (list (concat current-gemset "/bin")
+                          (list (if (rvm--default-gemset-p gemset)
+                                    (concat gemhome "/bin")
+                                  (concat current-gemset "/bin"))
                                 (concat gemhome
                                         rvm--gemset-separator "global/bin"))))
     ;; TODO: make system gems work
@@ -247,6 +249,9 @@ If no .rvmrc file is found, the default ruby is used insted."
 
 (defun rvm--ruby-default ()
   (car (rvm/list t)))
+
+(defun rvm--default-gemset-p (gemset)
+  (string= gemset rvm--gemset-default))
 
 (defun rvm--call-process (&rest args)
   (with-temp-buffer
