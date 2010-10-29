@@ -1,4 +1,4 @@
-;;; rvm-tests.el --- Test Suite for rvm.el
+;;; rvm-integration-tests.el --- Test Suite for rvm.el
 
 ;; Copyright (C) 2010 Yves Senn
 

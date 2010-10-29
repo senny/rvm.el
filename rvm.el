@@ -165,6 +165,7 @@ If no .rvmrc file is found, the default ruby is used insted."
   (let ((info (rvm--call-process "info" ruby-version))
         (start 0)
         (parsed-info '()))
+    (when (not info) (error "The ruby version: %s is not installed" ruby-version))
     (while (string-match "\s+\\(.+\\):\s+\"\\(.+\\)\"" info start)
       (let ((info-key (match-string 1 info))
             (info-value (match-string 2 info)))
@@ -223,11 +224,15 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm--rvmrc-read-version (path-to-rvmrc)
   (with-temp-buffer
     (insert-file-contents path-to-rvmrc)
-    (goto-char (point-min))
-    (if (re-search-forward
-         (concat "rvm\s+\\(.+\\)" rvm--gemset-separator "\\(.*\\)") nil t)
-        (list (match-string 1) (match-string 2))
-      nil)))
+    (rvm--rvmrc-parse-version (buffer-substring-no-properties (point-min) (point-max)))))
+
+(defun rvm--rvmrc-parse-version (rvmrc-line)
+  (when (string-match
+         (concat "rvm\\(\s+use\\)?\s+\\([^" rvm--gemset-separator "]+\\)\\(" rvm--gemset-separator "\\(.*\\)\\)?")
+       rvmrc-line)
+    (list (match-string 2 rvmrc-line) (or
+                                       (match-string 4 rvmrc-line)
+                                       rvm--gemset-default))))
 
 (defun rvm--set-gemhome (gemhome gemset)
   (if (and gemhome gemset)
