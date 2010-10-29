@@ -40,6 +40,7 @@
 (defun rvm--call-process (&rest args)
   (let ((command (first args))
         (arg1 (second args)))
+
     (cond
      ((and (string= command "list") (string= arg1 t))
       "ruby-1.9.2-head")
@@ -59,8 +60,11 @@ Default Ruby (for new shells)
 System Ruby
 
    system [ x86_64 i386 ppc ]")
-     ((and (string= command "gemset list") (string= arg1 "ruby-1.9.2-head"))
-      "experimental
+     ((equal args '("ruby-1.9.2-head" "gemset" "list"))
+      "
+gemsets for ruby-1.9.2-head (found in /Users/senny/.rvm/gems/ruby-1.9.2-head)
+
+experimental
 global
 rails3
 rails3-beta4
@@ -139,15 +143,19 @@ environment:
   IRBRC:        \"/Users/senny/.rvm/rubies/ruby-1.8.7-p249/.irbrc\"
   gemset:       \"\""))))
 
-(defun should-be-rvm-environment (ruby-binary gemhome gempath)
-  (should (equal (rvm--emacs-ruby-binary) ruby-binary))
-  (should (string-match-p ruby-binary (getenv "PATH")))
+(defun should-be-rvm-environment (ruby-binaries gemhome gempath)
+  (should (equal (rvm--emacs-ruby-binary) ruby-binaries))
+  (dolist (binary ruby-binaries)
+    (should (string-match-p binary (getenv "PATH"))))
   (should (equal (rvm--emacs-gemhome) gemhome))
   (should (equal (rvm--emacs-gempath) gempath)))
 
 (defun rvm-test-environment (body)
   (rvm-use-default)
-  (should-be-rvm-environment "/Users/senny/.rvm/rubies/ruby-1.9.2-head/bin/" "/Users/senny/.rvm/gems/ruby-1.9.2-head" "/Users/senny/.rvm/gems/ruby-1.9.2-head:/Users/senny/.rvm/gems/ruby-1.9.2-head@global")
+  (should-be-rvm-environment
+   '("/Users/senny/.rvm/rubies/ruby-1.9.2-head/bin/")
+   "/Users/senny/.rvm/gems/ruby-1.9.2-head@global"
+   "/Users/senny/.rvm/gems/ruby-1.9.2-head:/Users/senny/.rvm/gems/ruby-1.9.2-head@global")
   (funcall body))
 
 (deftest rvm-test-info ()
@@ -170,7 +178,7 @@ environment:
 
 (deftest rvm-test-gemset-list ()
   (let* ((result (rvm/gemset-list "ruby-1.9.2-head")))
-    (should (equal result '("*default*" "global" "rails3" "rails3-beta4" "rails3beta")))))
+    (should (equal result '("experimental" "global" "rails3" "rails3-beta4" "rails3beta")))))
 
 (deftest rvm-test-rvmrc-read-version ()
   (should (equal (rvm--rvmrc-read-version ".rvmrc") '("ruby-1.9.2-head" "rails3"))))
@@ -178,13 +186,19 @@ environment:
 (deftest rvm-test-rvm-use ()
   (rvm-test-environment (lambda ()
                           (rvm-use "ruby-1.8.7-p249" "experimental")
-                          (should-be-rvm-environment "/Users/senny/.rvm/rubies/ruby-1.8.7-p249/bin/" "/Users/senny/.rvm/gems/ruby-1.8.7-p249@experimental" "/Users/senny/.rvm/gems/ruby-1.8.7-p249@experimental:/Users/senny/.rvm/gems/ruby-1.8.7-p249@global")
+                          (should-be-rvm-environment
+                           '("/Users/senny/.rvm/rubies/ruby-1.8.7-p249/bin/")
+                           "/Users/senny/.rvm/gems/ruby-1.8.7-p249@experimental"
+                           "/Users/senny/.rvm/gems/ruby-1.8.7-p249:/Users/senny/.rvm/gems/ruby-1.8.7-p249@experimental")
                           )))
 
 (deftest rvm-test-activate-corresponding-ruby ()
   (rvm-test-environment (lambda ()
                           (rvm-activate-corresponding-ruby)
-                          (should-be-rvm-environment "/Users/senny/.rvm/rubies/ruby-1.9.2-head/bin/" "/Users/senny/.rvm/gems/ruby-1.9.2-head@rails3" "/Users/senny/.rvm/gems/ruby-1.9.2-head@rails3:/Users/senny/.rvm/gems/ruby-1.9.2-head@global")
+                          (should-be-rvm-environment
+                           '("/Users/senny/.rvm/rubies/ruby-1.9.2-head/bin/")
+                           "/Users/senny/.rvm/gems/ruby-1.9.2-head@rails3"
+                           "/Users/senny/.rvm/gems/ruby-1.9.2-head:/Users/senny/.rvm/gems/ruby-1.9.2-head@rails3")
                           )))
 
 (ert-run-tests-interactively "rvm-.*")
