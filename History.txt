@@ -8,6 +8,7 @@
 === Bugfixes
 * rvm-open-gem should now work with the standard ido distribution
 * the exec-path is now set properly
+* gem-home and gem-path are now set using `rvm info` instead of building the paths manually
 
 == 1.1 (16.05.2010)
 

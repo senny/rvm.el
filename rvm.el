@@ -105,11 +105,13 @@ If no .rvmrc file is found, the default ruby is used insted."
           (picked-gemset (rvm--completing-read "Gemset: "
                                                (rvm/gemset-list picked-ruby))))
      (list picked-ruby picked-gemset)))
-  (let* ((ruby-info (rvm/info new-ruby))
+  (let* ((new-ruby-with-gemset (concat new-ruby rvm--gemset-separator new-gemset))
+         (ruby-info (rvm/info new-ruby-with-gemset))
          (new-ruby-binary (cdr (assoc "ruby" ruby-info)))
-         (new-ruby-gemhome (cdr (assoc "GEM_HOME" ruby-info))))
+         (new-ruby-gemhome (cdr (assoc "GEM_HOME" ruby-info)))
+         (new-ruby-gempath (cdr (assoc "GEM_PATH" ruby-info))))
     (rvm--set-ruby (file-name-directory new-ruby-binary))
-    (rvm--set-gemhome new-ruby-gemhome new-gemset))
+    (rvm--set-gemhome new-ruby-gemhome new-ruby-gempath new-gemset))
   (message (concat "Ruby: " new-ruby " Gemset: " new-gemset)))
 
 ;;;###autoload
@@ -234,19 +236,17 @@ If no .rvmrc file is found, the default ruby is used insted."
                                        (match-string 4 rvmrc-line)
                                        rvm--gemset-default))))
 
-(defun rvm--set-gemhome (gemhome gemset)
-  (if (and gemhome gemset)
-      (let ((current-gemset (concat gemhome rvm--gemset-separator gemset)))
-        (setenv "GEM_HOME" current-gemset)
-        (setenv "GEM_PATH" (concat gemhome ":" current-gemset))
-        (setenv "BUNDLE_PATH" (if (string= gemset rvm--gemset-default)
-                                  gemhome current-gemset))
-        (rvm--change-path 'rvm--current-gem-binary-path
-                          (list (if (rvm--default-gemset-p gemset)
-                                    (concat gemhome "/bin")
-                                  (concat current-gemset "/bin"))
-                                (concat gemhome
-                                        rvm--gemset-separator "global/bin"))))
+(defun rvm--gem-binary-path-from-gem-path (gempath)
+  (let ((gem-paths (split-string gempath ":")))
+    (mapcar (lambda (path) (concat path "/bin")) gem-paths)))
+  
+(defun rvm--set-gemhome (gemhome gempath gemset)
+  (if (and gemhome gempath gemset)
+      (progn
+        (setenv "GEM_HOME" gemhome)
+        (setenv "GEM_PATH" gempath)
+        (setenv "BUNDLE_PATH" gemhome)
+        (rvm--change-path 'rvm--current-gem-binary-path (rvm--gem-binary-path-from-gem-path gempath)))
     ;; TODO: make system gems work
     (setenv "GEM_HOME" "")
     (setenv "GEM_PATH" "")
