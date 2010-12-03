@@ -239,7 +239,7 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm--rvmrc-parse-version (rvmrc-line)
   (when (string-match
          (concat "rvm\\(\s+use\\)?\s+\\([^" rvm--gemset-separator "]+\\)\\(" rvm--gemset-separator "\\(.*\\)\\)?")
-       rvmrc-line)
+         rvmrc-line)
     (list (match-string 2 rvmrc-line) (or
                                        (match-string 4 rvmrc-line)
                                        rvm--gemset-default))))
@@ -247,7 +247,7 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm--gem-binary-path-from-gem-path (gempath)
   (let ((gem-paths (split-string gempath ":")))
     (mapcar (lambda (path) (concat path "/bin")) gem-paths)))
-  
+
 (defun rvm--set-gemhome (gemhome gempath gemset)
   (if (and gemhome gempath gemset)
       (progn
