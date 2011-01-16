@@ -113,7 +113,7 @@ If no .rvmrc file is found, the default ruby is used insted."
           (picked-gemset (rvm--completing-read "Gemset: "
                                                (rvm/gemset-list picked-ruby))))
      (list picked-ruby picked-gemset)))
-  (let* ((new-ruby-with-gemset (concat new-ruby rvm--gemset-separator new-gemset))
+  (let* ((new-ruby-with-gemset (rvm--ruby-gemset-string new-ruby new-gemset))
          (ruby-info (rvm/info new-ruby-with-gemset))
          (new-ruby-binary (cdr (assoc "ruby" ruby-info)))
          (new-ruby-gemhome (cdr (assoc "GEM_HOME" ruby-info)))
@@ -182,6 +182,10 @@ If no .rvmrc file is found, the default ruby is used insted."
         (add-to-list 'parsed-info (cons info-key info-value))
         (setq start (match-end 0))))
     parsed-info))
+
+(defun rvm--ruby-gemset-string (ruby-version gemset)
+  (if (string= gemset rvm--gemset-default) ruby-version
+    (concat ruby-version rvm--gemset-separator gemset)))
 
 (defun rvm--completing-read (prompt options)
   (funcall rvm-interactive-completion-function prompt options))
