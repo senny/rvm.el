@@ -6,6 +6,7 @@
 * rvm-open-gem creates a new perspective when perspective.el is loaded
 
 === Bugfixes
+* rvm now works again with the global gemset
 * rvm-open-gem should now work with the standard ido distribution
 * the exec-path is now set properly
 * gem-home and gem-path are now set using `rvm info` instead of building the paths manually
