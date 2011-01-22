@@ -90,6 +90,9 @@ This path gets added to the PATH variable and the exec-path list.")
 (defvar rvm--list-ruby-regexp "\s*\\(=>\\)?\s*\\(.+?\\)\s*\\[\\(.+\\)\\]\s*$"
   "regular expression to parse the ruby version from the 'rvm list' output")
 
+(defvar rvm--gemset-list-filter-regexp "^\\(gemsets for\\|Gemset '\\)"
+  "regular expression to filter the output of rvm gemset list")
+
 (defvar rvm--rvmrc-parse-regexp (concat "rvm\\(?:\s+use\\)?\s+\\(?:--.+\s\\)*\\([^"
                                         rvm--gemset-separator
                                         "\n]+\\)\\(?:"
@@ -187,10 +190,10 @@ If no .rvmrc file is found, the default ruby is used insted."
   (let* ((gemset-result (rvm--call-process ruby-version "gemset" "list"))
          (gemset-lines (split-string gemset-result "\n"))
          (parsed-gemsets (list)))
-    (loop for i from 2 to (length gemset-lines) do
+    (loop for i from 0 to (length gemset-lines) do
           (let ((gemset (nth i gemset-lines)))
             (when (and (> (length gemset) 0)
-                       (not (string-match "info:" gemset)))
+                       (not (string-match rvm--gemset-list-filter-regexp gemset)))
               (add-to-list 'parsed-gemsets gemset t))))
     parsed-gemsets))
 
