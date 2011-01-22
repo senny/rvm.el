@@ -87,6 +87,15 @@ This path gets added to the PATH variable and the exec-path list.")
 (defvar rvm--list-ruby-regexp "\s*\\(=>\\)?\s*\\(.+?\\)\s*\\[\\(.+\\)\\]\s*$"
   "regular expression to parse the ruby version from the 'rvm list' output")
 
+(defvar rvm--rvmrc-parse-regexp (concat "rvm\\(?:\s+use\\)?\s+\\(?:--.+\s\\)*\\([^"
+                                        rvm--gemset-separator
+                                        "\n]+\\)\\(?:"
+                                        rvm--gemset-separator
+                                        "\\(.+\\)\\)?")
+  "regular expression to parse the .rvmrc files inside project directories.
+the first group matches the ruby-version and the second group is the gemset.
+when no gemset is set, the second group is nil")
+
 ;;;###autoload
 (defun rvm-use-default ()
   "use the rvm-default ruby as the current ruby version"
@@ -253,12 +262,10 @@ If no .rvmrc file is found, the default ruby is used insted."
     (rvm--rvmrc-parse-version (buffer-substring-no-properties (point-min) (point-max)))))
 
 (defun rvm--rvmrc-parse-version (rvmrc-line)
-  (when (string-match
-         (concat "rvm\\(?:\s+use\\)?\s+\\(?:--.+\s\\)*\\([^" rvm--gemset-separator "\n]+\\)\\(?:" rvm--gemset-separator "\\(.+\\)\\)?")
-         rvmrc-line)
-    (list (match-string 1 rvmrc-line) (or
-                                       (match-string 2 rvmrc-line)
-                                       rvm--gemset-default))))
+  (when (string-match rvm--rvmrc-parse-regexp
+                      rvmrc-line)
+    (list (match-string 1 rvmrc-line)
+          (or (match-string 2 rvmrc-line) rvm--gemset-default))))
 
 (defun rvm--gem-binary-path-from-gem-path (gempath)
   (let ((gem-paths (split-string gempath ":")))
