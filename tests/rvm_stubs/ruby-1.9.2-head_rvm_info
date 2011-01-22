@@ -1,0 +1,36 @@
+
+system:
+  uname:        "Darwin ymac.local 10.4.0 Darwin Kernel Version 10.4.0: Fri Apr 23 18:28:53 PDT 2010; root:xnu-1504.7.4~1/RELEASE_I386 i386"
+  shell:        "zsh"
+  version:     "4.3.9"
+
+rvm:
+  type:         "rvm is a shell function"
+  version:      "rvm 0.1.27 by Wayne E. Seguin (wayneeseguin@gmail.com) [http://rvm.beginrescueend.com/]"
+
+ruby:
+  interpreter:  "ruby"
+  version:      "1.9.2dev"
+  date:         "2010-03-22"
+  platform:     "x86_64-darwin10.2.0"
+  patchlevel:   "2010-03-22 trunk 27005"
+  full_version: "ruby 1.9.2dev (2010-03-22 trunk 27005) [x86_64-darwin10.2.0]"
+
+homes:
+  gem:          "/Users/senny/.rvm/gems/ruby-1.9.2-head"
+  ruby:         "/Users/senny/.rvm/rubies/ruby-1.9.2-head"
+
+binaries:
+  ruby:         "/Users/senny/.rvm/rubies/ruby-1.9.2-head/bin/ruby"
+  irb:          "/Users/senny/.rvm/rubies/ruby-1.9.2-head/bin/irb"
+  gem:          "/Users/senny/.rvm/rubies/ruby-1.9.2-head/bin/gem"
+  rake:         "/Users/senny/.rvm/rubies/ruby-1.9.2-head/bin/rake"
+
+environment:
+  GEM_HOME:     "/Users/senny/.rvm/gems/ruby-1.9.2-head"
+  GEM_PATH:     "/Users/senny/.rvm/gems/ruby-1.9.2-head:/Users/senny/.rvm/gems/ruby-1.9.2-head@global"
+  BUNDLE_PATH:  "/Users/senny/.rvm/gems/ruby-1.9.2-head"
+  MY_RUBY_HOME: "/Users/senny/.rvm/rubies/ruby-1.9.2-head"
+  IRBRC:        "/Users/senny/.rvm/rubies/ruby-1.9.2-head/.irbrc"
+  gemset:       ""
+

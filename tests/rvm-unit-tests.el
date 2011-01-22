@@ -37,19 +37,22 @@
 
 (require 'ert)
 
-(deftest rvm-unit-test-rvmrv-parse-version ()
+(deftest rvm-unit-test-rvmrc-parse-version ()
   (should (equal (rvm--rvmrc-parse-version "rvm a_ruby@a_gemset")
-                 '("a_ruby" "a_gemset")))
-  )
+                 '("a_ruby" "a_gemset"))))
 
-(deftest rvm-unit-test-rvmrv-parse-version-with-use ()
+(deftest rvm-unit-test-rvmrc-parse-version-with-use ()
   (should (equal (rvm--rvmrc-parse-version "rvm use another_ruby@another_gemset")
-                 '("another_ruby" "another_gemset")))
-  )
+                 '("another_ruby" "another_gemset"))))
 
-(deftest rvm-unit-test-rvmrv-parse-version-without-gemset ()
+(deftest rvm-unit-test-rvmrc-parse-version-without-gemset ()
   (should (equal (rvm--rvmrc-parse-version "rvm another_ruby")
-                 '("another_ruby" "global")))
-  )
+                 '("another_ruby" "global"))))
 
-(ert-run-tests-interactively "rvm-unit-.*")
+(deftest rvm-unit-test-rvmrc-parse-version-with-single-flag ()
+  (should (equal (rvm--rvmrc-parse-version "rvm --create ruby-1.8.7-p302@foo")
+                 '("ruby-1.8.7-p302" "foo"))))
+
+(deftest rvm-unit-test-rvmrc-parse-version-with-multiple-single-flag ()
+  (should (equal (rvm--rvmrc-parse-version "rvm --one --two --three ree-1.8.7-2010.01")
+                 '("ree-1.8.7-2010.01" "global"))))
