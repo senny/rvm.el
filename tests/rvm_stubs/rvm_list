@@ -1,0 +1,9 @@
+
+rvm rubies
+
+   ruby-1.8.7-p249 [ x86_64 ]
+   ruby-1.9.1-p378 [ x86_64 ]
+=> ruby-1.9.2-head [ x86_64 ]
+   ruby-1.9.2-preview1 [ i386 ]
+   ruby-head [ x86_64 ]
+

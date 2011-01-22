@@ -1,0 +1,36 @@
+
+system:
+  uname:        "Darwin ymac.local 10.4.0 Darwin Kernel Version 10.4.0: Fri Apr 23 18:28:53 PDT 2010; root:xnu-1504.7.4~1/RELEASE_I386 i386"
+  shell:        "zsh"
+  version:     "4.3.9"
+
+rvm:
+  type:         "rvm is a shell function"
+  version:      "rvm 0.1.27 by Wayne E. Seguin (wayneeseguin@gmail.com) [http://rvm.beginrescueend.com/]"
+
+ruby:
+  interpreter:  "ruby"
+  version:      "1.8.7"
+  date:         "2010-01-10"
+  platform:     "i686-darwin10.2.0"
+  patchlevel:   "2010-01-10 patchlevel 249"
+  full_version: "ruby 1.8.7 (2010-01-10 patchlevel 249) [i686-darwin10.2.0]"
+
+homes:
+  gem:          "/Users/senny/.rvm/gems/ruby-1.8.7-p249@experimental"
+  ruby:         "/Users/senny/.rvm/rubies/ruby-1.8.7-p249"
+
+binaries:
+  ruby:         "/Users/senny/.rvm/rubies/ruby-1.8.7-p249/bin/ruby"
+  irb:          "/Users/senny/.rvm/rubies/ruby-1.8.7-p249/bin/irb"
+  gem:          "/Users/senny/.rvm/rubies/ruby-1.8.7-p249/bin/gem"
+  rake:         "/Users/senny/.rvm/gems/ruby-1.8.7-p249@global/bin/rake"
+
+environment:
+  GEM_HOME:     "/Users/senny/.rvm/gems/ruby-1.8.7-p249@experimental"
+  GEM_PATH:     "/Users/senny/.rvm/gems/ruby-1.8.7-p249@experimental:/Users/senny/.rvm/gems/ruby-1.8.7-p249@global"
+  BUNDLE_PATH:  "/Users/senny/.rvm/gems/ruby-1.8.7-p249"
+  MY_RUBY_HOME: "/Users/senny/.rvm/rubies/ruby-1.8.7-p249"
+  IRBRC:        "/Users/senny/.rvm/rubies/ruby-1.8.7-p249/.irbrc"
+  gemset:       ""
+
