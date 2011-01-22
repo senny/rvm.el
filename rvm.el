@@ -242,7 +242,7 @@ If no .rvmrc file is found, the default ruby is used insted."
 
 (defun rvm--rvmrc-parse-version (rvmrc-line)
   (when (string-match
-         (concat "rvm\\(?:\s+use\\)?\s+\\([^" rvm--gemset-separator "\n]+\\)\\(?:" rvm--gemset-separator "\\(.+\\)\\)?")
+         (concat "rvm\\(?:\s+use\\)?\s+\\(?:--.+\s\\)*\\([^" rvm--gemset-separator "\n]+\\)\\(?:" rvm--gemset-separator "\\(.+\\)\\)?")
          rvmrc-line)
     (list (match-string 1 rvmrc-line) (or
                                        (match-string 2 rvmrc-line)
