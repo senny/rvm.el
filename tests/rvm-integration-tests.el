@@ -116,11 +116,10 @@
 
 (deftest rvm-test-activate-corresponding-ruby ()
   (rvm-test-environment (lambda ()
+                          (cd (file-name-directory (symbol-file 'get-rvm-stub)))
                           (rvm-activate-corresponding-ruby)
                           (should-be-rvm-environment
                            '("/Users/senny/.rvm/rubies/ruby-1.9.2-head/bin/")
                            "/Users/senny/.rvm/gems/ruby-1.9.2-head@rails3"
                            "/Users/senny/.rvm/gems/ruby-1.9.2-head@rails3:/Users/senny/.rvm/gems/ruby-1.9.2-head@global")
                           )))
-
-(ert-run-tests-interactively "rvm-.*")

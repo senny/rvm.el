@@ -56,5 +56,3 @@
 (deftest rvm-unit-test-rvmrc-parse-version-with-multiple-single-flag ()
   (should (equal (rvm--rvmrc-parse-version "rvm --one --two --three ree-1.8.7-2010.01")
                  '("ree-1.8.7-2010.01" "global"))))
-
-(ert-run-tests-interactively "rvm-unit-.*")
