@@ -84,6 +84,9 @@ This path gets added to the PATH variable and the exec-path list.")
   "reflects the path to the current 'rubygems' executables.
 This path gets added to the PATH variable and the exec-path list.")
 
+(defvar rvm--info-option-regexp "\s+\\(.+\\):\s+\"\\(.+\\)\""
+  "regular expression to parse the options from rvm info")
+
 (defvar rvm--list-ruby-regexp "\s*\\(=>\\)?\s*\\(.+?\\)\s*\\[\\(.+\\)\\]\s*$"
   "regular expression to parse the ruby version from the 'rvm list' output")
 
@@ -151,8 +154,7 @@ If no .rvmrc file is found, the default ruby is used insted."
          (current-dir default-directory))
     (mapcar (lambda (f)
               (when (string-match-p "-tests.el$" f) (load f)))
-            (directory-files (file-name-directory test-directory)
-                             t))
+            (directory-files (file-name-directory test-directory) t))
     (ert-run-tests-interactively "rvm-.*")))
 
 ;;;; TODO: take buffer switching into account
@@ -197,7 +199,7 @@ If no .rvmrc file is found, the default ruby is used insted."
         (start 0)
         (parsed-info '()))
     (when (not info) (error "The ruby version: %s is not installed" ruby-version))
-    (while (string-match "\s+\\(.+\\):\s+\"\\(.+\\)\"" info start)
+    (while (string-match rvm--info-option-regexp info start)
       (let ((info-key (match-string 1 info))
             (info-value (match-string 2 info)))
         (add-to-list 'parsed-info (cons info-key info-value))
@@ -205,7 +207,7 @@ If no .rvmrc file is found, the default ruby is used insted."
     parsed-info))
 
 (defun rvm--ruby-gemset-string (ruby-version gemset)
-  (if (string= gemset rvm--gemset-default) ruby-version
+  (if (rvm--default-gemset-p gemset) ruby-version
     (concat ruby-version rvm--gemset-separator gemset)))
 
 (defun rvm--completing-read (prompt options)
@@ -259,11 +261,10 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm--rvmrc-read-version (path-to-rvmrc)
   (with-temp-buffer
     (insert-file-contents path-to-rvmrc)
-    (rvm--rvmrc-parse-version (buffer-substring-no-properties (point-min) (point-max)))))
+    (rvm--rvmrc-parse-version (buffer-string))))
 
 (defun rvm--rvmrc-parse-version (rvmrc-line)
-  (when (string-match rvm--rvmrc-parse-regexp
-                      rvmrc-line)
+  (when (string-match rvm--rvmrc-parse-regexp rvmrc-line)
     (list (match-string 1 rvmrc-line)
           (or (match-string 2 rvmrc-line) rvm--gemset-default))))
 
@@ -278,7 +279,6 @@ If no .rvmrc file is found, the default ruby is used insted."
         (setenv "GEM_PATH" gempath)
         (setenv "BUNDLE_PATH" gemhome)
         (rvm--change-path 'rvm--current-gem-binary-path (rvm--gem-binary-path-from-gem-path gempath)))
-    ;; TODO: make system gems work
     (setenv "GEM_HOME" "")
     (setenv "GEM_PATH" "")
     (setenv "BUNDLE_PATH" "")))
