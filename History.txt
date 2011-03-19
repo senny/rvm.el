@@ -23,3 +23,6 @@
 
 === Bugfixes
 * Fixed setting of gemset path and ruby path
+
+=== Bugfixes
+* Fixed leading blanks in gemset name (global) using chomp

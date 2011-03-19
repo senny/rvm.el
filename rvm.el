@@ -1,6 +1,6 @@
 ;;; rvm.el --- Emacs integration for rvm
 
-;; Copyright (C) 2010 Yves Senn
+;; Copyright (C) 2010-2011 Yves Senn
 
 ;; Author: Yves Senn <yves.senn@gmx.ch>
 ;; URL: http://www.emacswiki.org/emacs/RvmEl
@@ -194,7 +194,7 @@ If no .rvmrc file is found, the default ruby is used insted."
           (let ((gemset (nth i gemset-lines)))
             (when (and (> (length gemset) 0)
                        (not (string-match rvm--gemset-list-filter-regexp gemset)))
-              (add-to-list 'parsed-gemsets gemset t))))
+                (add-to-list 'parsed-gemsets (chomp gemset) t))))
     parsed-gemsets))
 
 (defun rvm/info (&optional ruby-version)
