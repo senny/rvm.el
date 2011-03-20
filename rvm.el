@@ -102,6 +102,17 @@ This path gets added to the PATH variable and the exec-path list.")
 the first group matches the ruby-version and the second group is the gemset.
 when no gemset is set, the second group is nil")
 
+;; Support Code
+
+;; Put with other utils
+;; From http://www.emacswiki.org/emacs/ElispCookbook
+(defun chomp (str)
+  "Chomp leading and tailing whitespace from STR."
+  (let ((s (if (symbolp str) (symbol-name str) str)))
+    (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" s)))
+
+;; Application Code
+
 ;;;###autoload
 (defun rvm-use-default ()
   "use the rvm-default ruby as the current ruby version"
