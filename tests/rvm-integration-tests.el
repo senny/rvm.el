@@ -83,7 +83,7 @@
    "/Users/senny/.rvm/gems/ruby-1.9.2-head:/Users/senny/.rvm/gems/ruby-1.9.2-head@global")
   (funcall body))
 
-(deftest rvm-test-rvm/info ()
+(ert-deftest rvm-test-rvm/info ()
   (let* ((result (rvm/info "ruby-1.8.7-p249"))
          (version (cdr (assoc "version" result)))
          (gem_home (cdr (assoc "GEM_HOME" result)))
@@ -96,16 +96,16 @@
     (should (string= gemset nil))
     (should (string= binary "/Users/senny/.rvm/rubies/ruby-1.8.7-p249/bin/ruby"))))
 
-(deftest rvm-test-rvm/list ()
+(ert-deftest rvm-test-rvm/list ()
   (let* ((result (rvm/list)))
     (should (equal result
                    '("ruby-1.9.2-head" "ruby-1.8.7-p249" "ruby-1.9.1-p378" "ruby-1.9.2-preview1" "ruby-head")))))
 
-(deftest rvm-test-rvm/gemset-list ()
+(ert-deftest rvm-test-rvm/gemset-list ()
   (let* ((result (rvm/gemset-list "ruby-1.9.2-head")))
     (should (equal result '("experimental" "global" "rails3" "rails3-beta4" "rails3beta")))))
 
-(deftest rvm-test-rvm-use ()
+(ert-deftest rvm-test-rvm-use ()
   (rvm-test-environment (lambda ()
                           (rvm-use "ruby-1.8.7-p249" "experimental")
                           (should-be-rvm-environment
@@ -114,7 +114,7 @@
                            "/Users/senny/.rvm/gems/ruby-1.8.7-p249@experimental:/Users/senny/.rvm/gems/ruby-1.8.7-p249@global")
                           )))
 
-(deftest rvm-test-activate-corresponding-ruby ()
+(ert-deftest rvm-test-activate-corresponding-ruby ()
   (rvm-test-environment (lambda ()
                           (cd (file-name-directory (symbol-file 'get-rvm-stub)))
                           (rvm-activate-corresponding-ruby)
