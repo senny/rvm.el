@@ -37,22 +37,69 @@
 
 (require 'ert)
 
-(deftest rvm-unit-test-rvmrc-parse-version ()
+(ert-deftest rvm-unit-test-rvmrc-parse-version ()
   (should (equal (rvm--rvmrc-parse-version "rvm a_ruby@a_gemset")
                  '("a_ruby" "a_gemset"))))
 
-(deftest rvm-unit-test-rvmrc-parse-version-with-use ()
+(ert-deftest rvm-unit-test-rvmrc-parse-version-with-use ()
   (should (equal (rvm--rvmrc-parse-version "rvm use another_ruby@another_gemset")
                  '("another_ruby" "another_gemset"))))
 
-(deftest rvm-unit-test-rvmrc-parse-version-without-gemset ()
+(ert-deftest rvm-unit-test-rvmrc-parse-version-without-gemset ()
   (should (equal (rvm--rvmrc-parse-version "rvm another_ruby")
                  '("another_ruby" "global"))))
 
-(deftest rvm-unit-test-rvmrc-parse-version-with-single-flag ()
+(ert-deftest rvm-unit-test-rvmrc-parse-version-with-single-flag ()
   (should (equal (rvm--rvmrc-parse-version "rvm --create ruby-1.8.7-p302@foo")
                  '("ruby-1.8.7-p302" "foo"))))
 
-(deftest rvm-unit-test-rvmrc-parse-version-with-multiple-single-flag ()
+(ert-deftest rvm-unit-test-rvmrc-parse-version-with-multiple-single-flag ()
   (should (equal (rvm--rvmrc-parse-version "rvm --one --two --three ree-1.8.7-2010.01")
                  '("ree-1.8.7-2010.01" "global"))))
+
+(ert-deftest rvm-unit-test-rvmrc-parse-version-with-rvm-generated-rvmrc-short ()
+  (should (equal (rvm--rvmrc-parse-version "environment_id=\"ruby-1.9.2-p180-patched@something\"")
+                 '("ruby-1.9.2-p180-patched" "something"))))
+
+(ert-deftest rvm-unit-test-rvmrc-parse-version-with-rvm-generated-rvmrc ()
+  (should (equal (rvm--rvmrc-parse-version "#!/usr/bin/env bash
+
+# This is an RVM Project .rvmrc file, used to automatically load the ruby
+# development environment upon cd'ing into the directory
+
+# First we specify our desired <ruby>[@<gemset>], the @gemset name is optional.
+environment_id=\"ruby-1.9.2-p180-patched@something\"
+
+#
+# First we attempt to load the desired environment directly from the environment
+# file. This is very fast and efficicent compared to running through the entire
+# CLI and selector. If you want feedback on which environment was used then
+# insert the word 'use' after --create as this triggers verbose mode.
+#
+if [[ -d \"${rvm_path:-$HOME/.rvm}/environments\" \
+  && -s \"${rvm_path:-$HOME/.rvm}/environments/$environment_id\" ]]
+then
+  \. \"${rvm_path:-$HOME/.rvm}/environments/$environment_id\"
+
+  if [[ -s \".rvm/hooks/after_use\" ]]
+  then
+    . \".rvm/hooks/after_use\"
+  fi
+else
+  # If the environment file has not yet been created, use the RVM CLI to select.
+  if ! rvm --create use  \"$environment_id\"
+  then
+    echo \"Failed to create RVM environment ''.\"
+  fi
+fi
+
+#
+# If you use an RVM gemset file to install a list of gems (*.gems), you can have
+# it be automatically loaded. Uncomment the following and adjust the filename if
+# necessary.
+#
+# filename=\".gems\"
+# if [[ -s \"$filename\" ]] ; then
+#   rvm gemset import \"$filename\" | grep -v already | grep -v listed | grep -v complete | sed '/^$/d'
+# fi\"")
+                 '("ruby-1.9.2-p180-patched" "something"))))

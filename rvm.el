@@ -93,11 +93,13 @@ This path gets added to the PATH variable and the exec-path list.")
 (defvar rvm--gemset-list-filter-regexp "^\\(gemsets for\\|Gemset '\\)"
   "regular expression to filter the output of rvm gemset list")
 
-(defvar rvm--rvmrc-parse-regexp (concat "rvm\\(?:\s+use\\)?\s+\\(?:--.+\s\\)*\\([^"
+(defvar rvm--rvmrc-parse-regexp (concat "\\(?:^rvm\s+\\(?:use\s+\\|\\)\\|environment_id=\"\\)\s*"
+                                        "\\(?:--.+\s\\)*" ;; Flags
+                                        "\\([^"
                                         rvm--gemset-separator
                                         "\n]+\\)\\(?:"
                                         rvm--gemset-separator
-                                        "\\(.+\\)\\)?")
+                                        "\\([^\"]+\\)\\)?\\(?:\"\\|\\)")
   "regular expression to parse the .rvmrc files inside project directories.
 the first group matches the ruby-version and the second group is the gemset.
 when no gemset is set, the second group is nil")
@@ -122,7 +124,7 @@ when no gemset is set, the second group is nil")
 ;;;###autoload
 (defun rvm-activate-corresponding-ruby ()
   "activate the corresponding ruby version for the file in the current buffer.
-This function searches for an .rvmrc file and actiavtes the configured ruby.
+This function searches for an .rvmrc file and activates the configured ruby.
 If no .rvmrc file is found, the default ruby is used insted."
   (interactive)
   (let* ((rvmrc-path (rvm--rvmrc-locate))
