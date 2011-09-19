@@ -128,7 +128,7 @@ when no gemset is set, the second group is nil")
 This function searches for an .rvmrc file and activates the configured ruby.
 If no .rvmrc file is found, the default ruby is used insted."
   (interactive)
-  (rvm-working-p
+  (when (rvm-working-p)
    (let* ((rvmrc-path (rvm--rvmrc-locate))
           (rvmrc-info (if rvmrc-path (rvm--rvmrc-read-version rvmrc-path) nil)))
      (if rvmrc-info (rvm-use (first rvmrc-info) (second rvmrc-info))
@@ -143,7 +143,7 @@ If no .rvmrc file is found, the default ruby is used insted."
           (picked-gemset (rvm--completing-read "Gemset: "
                                                (rvm/gemset-list picked-ruby))))
      (list picked-ruby picked-gemset)))
-  (rvm-working-p
+  (when (rvm-working-p)
    (let* ((new-ruby-with-gemset (rvm--ruby-gemset-string new-ruby new-gemset))
           (ruby-info (rvm/info new-ruby-with-gemset))
           (new-ruby-binary (cdr (assoc "ruby" ruby-info)))
