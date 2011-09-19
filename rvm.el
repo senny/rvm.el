@@ -119,7 +119,8 @@ when no gemset is set, the second group is nil")
 (defun rvm-use-default ()
   "use the rvm-default ruby as the current ruby version"
   (interactive)
-  (rvm-use (rvm--ruby-default) rvm--gemset-default))
+  (when (rvm-working-p)
+    (rvm-use (rvm--ruby-default) rvm--gemset-default)))
 
 ;;;###autoload
 (defun rvm-activate-corresponding-ruby ()
@@ -127,10 +128,11 @@ when no gemset is set, the second group is nil")
 This function searches for an .rvmrc file and activates the configured ruby.
 If no .rvmrc file is found, the default ruby is used insted."
   (interactive)
-  (let* ((rvmrc-path (rvm--rvmrc-locate))
-         (rvmrc-info (if rvmrc-path (rvm--rvmrc-read-version rvmrc-path) nil)))
-    (if rvmrc-info (rvm-use (first rvmrc-info) (second rvmrc-info))
-      (rvm-use-default))))
+  (rvm-working-p
+   (let* ((rvmrc-path (rvm--rvmrc-locate))
+          (rvmrc-info (if rvmrc-path (rvm--rvmrc-read-version rvmrc-path) nil)))
+     (if rvmrc-info (rvm-use (first rvmrc-info) (second rvmrc-info))
+       (rvm-use-default)))))
 
 ;;;###autoload
 (defun rvm-use (new-ruby new-gemset)
@@ -141,26 +143,28 @@ If no .rvmrc file is found, the default ruby is used insted."
           (picked-gemset (rvm--completing-read "Gemset: "
                                                (rvm/gemset-list picked-ruby))))
      (list picked-ruby picked-gemset)))
-  (let* ((new-ruby-with-gemset (rvm--ruby-gemset-string new-ruby new-gemset))
-         (ruby-info (rvm/info new-ruby-with-gemset))
-         (new-ruby-binary (cdr (assoc "ruby" ruby-info)))
-         (new-ruby-gemhome (cdr (assoc "GEM_HOME" ruby-info)))
-         (new-ruby-gempath (cdr (assoc "GEM_PATH" ruby-info))))
-    (rvm--set-ruby (file-name-directory new-ruby-binary))
-    (rvm--set-gemhome new-ruby-gemhome new-ruby-gempath new-gemset))
-  (message (concat "Ruby: " new-ruby " Gemset: " new-gemset)))
+  (rvm-working-p
+   (let* ((new-ruby-with-gemset (rvm--ruby-gemset-string new-ruby new-gemset))
+          (ruby-info (rvm/info new-ruby-with-gemset))
+          (new-ruby-binary (cdr (assoc "ruby" ruby-info)))
+          (new-ruby-gemhome (cdr (assoc "GEM_HOME" ruby-info)))
+          (new-ruby-gempath (cdr (assoc "GEM_PATH" ruby-info))))
+     (rvm--set-ruby (file-name-directory new-ruby-binary))
+     (rvm--set-gemhome new-ruby-gemhome new-ruby-gempath new-gemset))
+   (message (concat "Ruby: " new-ruby " Gemset: " new-gemset))))
 
 ;;;###autoload
 (defun rvm-open-gem (gemhome)
   (interactive (list (rvm--emacs-gemhome)))
-  (let* ((gems-dir (concat gemhome "/gems/"))
-         (gem-name (rvm--completing-read "Gem: "
-                                         (directory-files gems-dir nil "^[^.]")))
-         (gem-dir (concat gems-dir gem-name)))
-    (when (and (featurep 'perspective) persp-mode)
-      (let ((initialize (not (gethash gem-name perspectives-hash))))
-        (persp-switch gem-name)))
-    (rvm--find-file gem-dir)))
+  (when (rvm-working-p)
+    (let* ((gems-dir (concat gemhome "/gems/"))
+           (gem-name (rvm--completing-read "Gem: "
+                                           (directory-files gems-dir nil "^[^.]")))
+           (gem-dir (concat gems-dir gem-name)))
+      (when (and (featurep 'perspective) persp-mode)
+        (let ((initialize (not (gethash gem-name perspectives-hash))))
+          (persp-switch gem-name)))
+      (rvm--find-file gem-dir))))
 
 (defun rvm-run-tests ()
   "run the complete test suite for rvm.el"
@@ -176,13 +180,15 @@ If no .rvmrc file is found, the default ruby is used insted."
 ;;;; TODO: take buffer switching into account
 (defun rvm-autodetect-ruby ()
   (interactive)
-  (add-hook 'ruby-mode-hook 'rvm-activate-corresponding-ruby)
-  (message "rvm.el is now autodetecting the ruby version"))
+  (when (rvm-working-p)
+    (add-hook 'ruby-mode-hook 'rvm-activate-corresponding-ruby)
+    (message "rvm.el is now autodetecting the ruby version")))
 
 (defun rvm-autodetect-ruby-stop ()
   (interactive)
-  (remove-hook 'ruby-mode-hook 'rvm-activate-corresponding-ruby)
-  (message "stopped rvm.el from autodetecting ruby versions"))
+  (when (rvm-working-p)
+    (remove-hook 'ruby-mode-hook 'rvm-activate-corresponding-ruby)
+    (message "stopped rvm.el from autodetecting ruby versions")))
 
 (defun rvm/list (&optional default-ruby)
   (let ((rubies (rvm--call-process "list" (when default-ruby "default")))
@@ -207,7 +213,7 @@ If no .rvmrc file is found, the default ruby is used insted."
           (let ((gemset (nth i gemset-lines)))
             (when (and (> (length gemset) 0)
                        (not (string-match rvm--gemset-list-filter-regexp gemset)))
-                (add-to-list 'parsed-gemsets (chomp gemset) t))))
+              (add-to-list 'parsed-gemsets (chomp gemset) t))))
     parsed-gemsets))
 
 (defun rvm/info (&optional ruby-version)
@@ -301,6 +307,9 @@ If no .rvmrc file is found, the default ruby is used insted."
 
 (defun rvm--ruby-default ()
   (car (rvm/list t)))
+
+(defun rvm-working-p ()
+  (file-exists-p rvm-executable))
 
 (defun rvm--default-gemset-p (gemset)
   (string= gemset rvm--gemset-default))
