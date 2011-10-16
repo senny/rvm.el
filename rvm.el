@@ -47,7 +47,9 @@
 ;;; Code:
 
 (defcustom rvm-executable
-  (or (executable-find "rvm") "~/.rvm/bin/rvm")
+  (or (executable-find "rvm")
+      (and (file-readable-p "~/.rvm/bin/rvm") "~/.rvm/bin/rvm")
+      (and (file-readable-p "/usr/local/rvm/bin/rvm") "/usr/local/rvm/bin/rvm"))
   "Location of RVM executable."
   :group 'rvm
   :type 'file)
