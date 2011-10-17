@@ -311,7 +311,7 @@ If no .rvmrc file is found, the default ruby is used insted."
   (car (rvm/list t)))
 
 (defun rvm-working-p ()
-  (file-exists-p rvm-executable))
+  (and rvm-executable (file-exists-p rvm-executable)))
 
 (defun rvm--default-gemset-p (gemset)
   (string= gemset rvm--gemset-default))
