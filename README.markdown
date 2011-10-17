@@ -8,7 +8,7 @@ Installation
 
 just drop rvm.el in your load-path and put the following in your .emacs
   <blockquote>
-        (require 'rvm)
+        (require 'rvm)<br/>
 (rvm-use-default) ;; use rvm's default ruby for the current Emacs session
     </blockquote>
 Usage
