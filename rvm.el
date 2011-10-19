@@ -130,6 +130,7 @@ when no gemset is set, the second group is nil")
 This function searches for an .rvmrc file and activates the configured ruby.
 If no .rvmrc file is found, the default ruby is used insted."
   (interactive)
+
   (when (rvm-working-p)
    (let* ((rvmrc-path (rvm--rvmrc-locate))
           (rvmrc-info (if rvmrc-path (rvm--rvmrc-read-version rvmrc-path) nil)))
@@ -235,7 +236,8 @@ If no .rvmrc file is found, the default ruby is used insted."
     (concat ruby-version rvm--gemset-separator gemset)))
 
 (defun rvm--completing-read (prompt options)
-  (funcall rvm-interactive-completion-function prompt options))
+  (let ((selected (funcall rvm-interactive-completion-function prompt options)))
+    (replace-regexp-in-string "^\\s-*\\|\\s-*$" "" selected)))
 
 (defun rvm--find-file (directory)
   (let ((default-directory directory))
