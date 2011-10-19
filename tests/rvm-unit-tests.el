@@ -37,6 +37,10 @@
 
 (require 'ert)
 
+(ert-deftest rvm-unit-test-rvm--string-trim ()
+  (should (equal (rvm--string-trim " test123\n\n  ")
+                 "test123")))
+
 (ert-deftest rvm-unit-test-rvmrc-parse-version ()
   (should (equal (rvm--rvmrc-parse-version "rvm a_ruby@a_gemset")
                  '("a_ruby" "a_gemset"))))
