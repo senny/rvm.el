@@ -37,6 +37,10 @@
 
 (require 'ert)
 
+(ert-deftest rvm-unit-test-rvm--string-trim ()
+  (should (equal (rvm--string-trim " test123\n\n  ")
+                 "test123")))
+
 (ert-deftest rvm-unit-test-rvmrc-parse-version ()
   (should (equal (rvm--rvmrc-parse-version "rvm a_ruby@a_gemset")
                  '("a_ruby" "a_gemset"))))
@@ -60,6 +64,16 @@
 (ert-deftest rvm-unit-test-rvmrc-parse-version-with-rvm-generated-rvmrc-short ()
   (should (equal (rvm--rvmrc-parse-version "environment_id=\"ruby-1.9.2-p180-patched@something\"")
                  '("ruby-1.9.2-p180-patched" "something"))))
+
+(ert-deftest rvm-unit-test-completing-read-all-good ()
+  (let ((rvm-interactive-completion-function
+         (lambda (prompt options) "global")))
+    (should (equal (rvm--completing-read "Foo" "Bar") "global"))))
+
+(ert-deftest rvm-unit-test-completing-read-all-space-in-name ()
+  (let ((rvm-interactive-completion-function
+         (lambda (prompt options) "   global")))
+    (should (equal (rvm--completing-read "Foo" "Bar") "global"))))
 
 (ert-deftest rvm-unit-test-rvmrc-parse-version-with-rvm-generated-rvmrc ()
   (should (equal (rvm--rvmrc-parse-version "#!/usr/bin/env bash
