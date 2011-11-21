@@ -82,6 +82,9 @@
   "reflects the path to the current 'ruby' executable.
 This path gets added to the PATH variable and the exec-path list.")
 
+(defvar rvm--current-ruby-src-path nil
+  "reflects the path to the current ruby's source.")
+
 (defvar rvm--current-gem-binary-path nil
   "reflects the path to the current 'rubygems' executables.
 This path gets added to the PATH variable and the exec-path list.")
@@ -153,7 +156,8 @@ If no .rvmrc file is found, the default ruby is used insted."
           (new-ruby-gemhome (cdr (assoc "GEM_HOME" ruby-info)))
           (new-ruby-gempath (cdr (assoc "GEM_PATH" ruby-info))))
      (rvm--set-ruby (file-name-directory new-ruby-binary))
-     (rvm--set-gemhome new-ruby-gemhome new-ruby-gempath new-gemset))
+     (rvm--set-gemhome new-ruby-gemhome new-ruby-gempath new-gemset)
+     (rvm--set-ruby-src new-ruby-gemhome))
    (message (concat "Ruby: " new-ruby " Gemset: " new-gemset))))
 
 ;;;###autoload
@@ -276,6 +280,16 @@ If no .rvmrc file is found, the default ruby is used insted."
 
 (defun rvm--set-ruby (ruby-binary)
   (rvm--change-path 'rvm--current-ruby-binary-path (list ruby-binary)))
+
+(defun rvm--set-ruby-src (gemhome)
+  (progn
+    (setq 'rvm--current-ruby-src-path
+          (concat (file-name-as-directory (replace-regexp-in-string "gems"
+                                                                    "src"
+                                                                    gemhome))
+                  (file-name-as-directory "misc")))
+    (add-to-list 'load-path rvm--current-ruby-src-path)))
+
 
 (defun rvm--rvmrc-locate (&optional path)
   "searches the directory tree for an .rvmrc configuration file"
