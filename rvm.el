@@ -283,7 +283,7 @@ If no .rvmrc file is found, the default ruby is used insted."
 
 (defun rvm--set-ruby-src (gemhome)
   (progn
-    (setq 'rvm--current-ruby-src-path
+    (setq rvm--current-ruby-src-path
           (concat (file-name-as-directory (replace-regexp-in-string "gems"
                                                                     "src"
                                                                     gemhome))
