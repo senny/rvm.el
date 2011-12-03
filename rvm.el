@@ -331,5 +331,12 @@ If no .rvmrc file is found, the default ruby is used insted."
           output
         (message output)))))
 
+(defun rvm-gem-install (gem)
+  "Install GEM into the currently active RVM Gemset."
+  (interactive "SGem Install: ")
+  (shell-command (format "%s install %s&" ; & executes async
+                         (concat (first rvm--current-ruby-binary-path) "/gem") gem))
+  (pop-to-buffer "*Async Shell Command*"))
+
 (provide 'rvm)
 ;;; rvm.el ends here

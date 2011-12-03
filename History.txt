@@ -1,12 +1,13 @@
 == In Git
 
 === Misc
-* Fixed weird ascii character problem in example 
+* Fixed weird ascii character problem in example
 
 === New Features
 * open sources in a gem from the current gemset
 * ability to change the used completion function
 * rvm-open-gem creates a new perspective when perspective.el is loaded
+* Install gems from Emacs with rvm-gem-install
 
 === Bugfixes
 * rvm now works again with the global gemset
