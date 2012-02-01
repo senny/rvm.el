@@ -1,12 +1,14 @@
 # In Git
 
+[Compare v1.2.0..master](https://github.com/senny/rvm.el/compare/1.2.0...master)
+
 ## New Features
 
 ## Bugfixes
 
 # 1.2.0 (01.02.2012)
 
-[Compare v1.2.0..master](https://github.com/senny/rvm.el/compare/1.2.0...master)
+[Compare v1.2.0..master](https://github.com/senny/rvm.el/compare/1.1...1.2.0)
 
 ## New Features
 
@@ -26,7 +28,7 @@
 
 # 1.1 (16.05.2010)
 
-[Compare v1.1.0..master](https://github.com/senny/rvm.el/compare/1.1...master)
+[Compare v1.1.0..master](https://github.com/senny/rvm.el/compare/1.0...1.1)
 
 ## New Features
 
