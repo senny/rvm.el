@@ -1,8 +1,13 @@
 
 gemsets for ruby-1.9.2-head (found in /Users/senny/.rvm/gems/ruby-1.9.2-head)
-
-experimental
+   experimental
 => global
    rails3
    rails3-beta4
    rails3beta
+
+
+gemsets for ruby-1.9.3-head (found in /Users/senny/.rvm/gems/ruby-1.9.3-head)
+   global
+   rails3-2
+
