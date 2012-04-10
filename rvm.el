@@ -212,15 +212,21 @@ If no .rvmrc file is found, the default ruby is used insted."
     parsed-rubies))
 
 (defun rvm/gemset-list (ruby-version)
-  (let* ((gemset-result (rvm--call-process ruby-version "gemset" "list"))
+  (let* ((gemset-result (rvm--call-process "gemset" "list_all"))
          (gemset-lines (split-string gemset-result "\n"))
-         (parsed-gemsets (list)))
-    (loop for i from 0 to (length gemset-lines) do
-          (let ((gemset (nth i gemset-lines)))
-            (when (and (> (length gemset) 0)
-                       (not (string-match rvm--gemset-list-filter-regexp gemset))
-                       (string-match rvm--gemset-list-regexp gemset))
-              (add-to-list 'parsed-gemsets (match-string 2 gemset) t))))
+         (parsed-gemsets (list))
+         (ruby-current-version nil))
+    (loop for gemset in gemset-lines do
+          (let ((filtered-gemset (string-match rvm--gemset-list-filter-regexp gemset)))
+            (if filtered-gemset
+                (if (string-match ruby-version gemset)
+                    (setq ruby-current-version ruby-version)
+                  (setq ruby-current-version nil)))
+            (if (and (> (length gemset) 0)
+                     ruby-current-version
+                     (not filtered-gemset)
+                     (string-match rvm--gemset-list-regexp gemset))
+                (add-to-list 'parsed-gemsets (match-string 2 gemset) t))))
     parsed-gemsets))
 
 (defun rvm/info (&optional ruby-version)

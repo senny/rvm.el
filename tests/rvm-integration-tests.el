@@ -57,8 +57,8 @@
       (get-rvm-stub "rvm_list_default"))
      ((string= command "list")
       (get-rvm-stub "rvm_list"))
-     ((equal args '("ruby-1.9.2-head" "gemset" "list"))
-      (get-rvm-stub "ruby-1.9.2-head_rvm_gemset_list"))
+     ((equal args '("gemset" "list_all"))
+      (get-rvm-stub "rvm_gemset_list"))
      ((and (string= command "info") (string= arg1 "ruby-1.9.2-head"))
       (get-rvm-stub "ruby-1.9.2-head_rvm_info"))
      ((and (string= command "info") (string= arg1 "ruby-1.9.2-head@rails3"))
@@ -104,6 +104,10 @@
 (ert-deftest rvm-test-rvm/gemset-list ()
   (let* ((result (rvm/gemset-list "ruby-1.9.2-head")))
     (should (equal result '("experimental" "global" "rails3" "rails3-beta4" "rails3beta")))))
+
+(ert-deftest rvm-test-rvm/gemset-list-other-ruby ()
+  (let* ((result (rvm/gemset-list "ruby-1.9.3-head")))
+    (should (equal result '("global" "rails3-2")))))
 
 (ert-deftest rvm-test-rvm-use ()
   (rvm-test-environment (lambda ()
