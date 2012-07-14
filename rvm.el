@@ -294,7 +294,7 @@ If no .rvmrc file is found, the default ruby is used insted."
    ((equal (expand-file-name path) (expand-file-name "~")) nil)
    ((equal (expand-file-name path) "/") nil)
    ((member rvm-configuration-file-name (directory-files path))
-    (concat (expand-file-name path) "/.rvmrc"))
+    (concat (expand-file-name path) "/" rvm-configuration-file-name))
    (t (rvm--rvmrc-locate (concat (file-name-as-directory path) "..")))))
 
 (defun rvm--rvmrc-read-version (path-to-rvmrc)
