@@ -104,7 +104,7 @@ This path gets added to the PATH variable and the exec-path list.")
                                         rvm--gemset-separator
                                         "\n]+\\)\\(?:"
                                         rvm--gemset-separator
-                                        "\\([^\"\s]+\\)\\)?\\(?:\"\\|\\)")
+                                        "\\([^\"\s\n]+\\)\\)?\\(?:\"\\|\\)")
   "regular expression to parse the .rvmrc files inside project directories.
 the first group matches the ruby-version and the second group is the gemset.
 when no gemset is set, the second group is nil")

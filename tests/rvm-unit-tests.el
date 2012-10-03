@@ -117,3 +117,9 @@ fi
 #   rvm gemset import \"$filename\" | grep -v already | grep -v listed | grep -v complete | sed '/^$/d'
 # fi\"")
                  '("ruby-1.9.2-p180-patched" "something"))))
+
+(ert-deftest rvm-unit-test-rvmrc-parse-version-with-rvm-generated-rvmrc ()
+  (should (equal (rvm--rvmrc-parse-version "rvm use --create 1.9.2@project
+
+# Something")
+                 '("1.9.2" "project"))))
