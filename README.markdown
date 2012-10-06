@@ -17,6 +17,14 @@ Just call the interactive function @rvm-activate-corresponding-ruby@ and rvm.el 
 
 Please note that using system-ruby is not supported in rvm.el
 
+Read about rvm.el
+-----------------
+If you want to read what people have written about rvm.el, this section links you to the relevant blog posts:
+
+* [Emacs Reboot #14](http://devblog.avdi.org/2011/10/11/rvm-el-and-inf-ruby-emacs-reboot-14/) by Avdi Grimm
+* [Handle Ruby versions](http://emacsrookie.com/2011/10/01/handle-ruby-versions/) by Samuel Tonini
+* [Emacs tidbits for Ruby developers](http://blog.senny.ch/blog/2012/10/06/emacs-tidbits-for-ruby-developers/) by Yves Senn
+
 Community
 ---------
 ### Got a question?
