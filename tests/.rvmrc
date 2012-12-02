@@ -1,1 +1,1 @@
-rvm ruby-1.9.2-head@rails3
+rvm --create ruby-1.9.2-head@rails3
