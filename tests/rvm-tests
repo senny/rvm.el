@@ -13,4 +13,4 @@
 (dolist (test-file (or argv (directory-files rvm-test-path t "-tests.el$")))
   (load test-file nil t))
 
-(ert-run-tests-batch t)
+(ert-run-tests-batch-and-exit t)
