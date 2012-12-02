@@ -1,0 +1,5 @@
+language: ruby
+rvm: 1.9.3
+
+# This boldly assumes that "emacs" is installed on the Travis build slave.
+script: emacs --script tests/rvm-tests
