@@ -11,7 +11,7 @@ Installation
 Just drop rvm.el in your load-path and put the following in your .emacs
 
 ```lisp
-(require 'rvm)<br/>
+(require 'rvm)
 (rvm-use-default) ;; use rvm's default ruby for the current Emacs session
 ```
 
