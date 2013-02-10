@@ -12,9 +12,10 @@ task 'release' do
   rvm_contents = File.read('rvm.el')
   File.write('rvm.el', rvm_contents.gsub("Version: #{current_version}", "Version: #{version}"))
 
-  run "git commit -a -m \"prepared #{version}\""
+  run "git commit -a -m \"prepare #{version}\""
 
   run "git tag -a -m \"Version #{version}\" #{version_tag}"
+  run "git push origin"
   run "git push origin --tags"
 end
 
