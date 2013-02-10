@@ -1,7 +1,7 @@
-[![Build Status](https://secure.travis-ci.org/senny/rvm.el.png?branch=master)](https://travis-ci.org/senny/rvm.el)
-
 rvm.el
 ======
+
+[![Build Status](https://secure.travis-ci.org/senny/rvm.el.png?branch=master)](https://travis-ci.org/senny/rvm.el)
 
 This package integrates Emacs with the Ruby Version Manager ( rvm ).
 
