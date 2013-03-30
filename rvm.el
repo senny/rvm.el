@@ -300,7 +300,8 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm--rvmrc-read-version (path-to-rvmrc)
   (with-temp-buffer
     (insert-file-contents path-to-rvmrc)
-    (replace-regexp "#.*$" "")
+    (while (re-search-forward "#.*$" nil t)
+      (replace-match "" nil nil))
     (rvm--rvmrc-parse-version (buffer-string))))
 
 (defun rvm--rvmrc-parse-version (rvmrc-line)
