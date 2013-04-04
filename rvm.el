@@ -178,9 +178,8 @@ If no .rvmrc file is found, the default ruby is used insted."
   (let* ((test-directory (concat (file-name-directory
                                   (symbol-file 'rvm-run-tests)) "tests/"))
          (current-dir default-directory))
-    (mapcar (lambda (f)
-              (when (string-match-p "-tests.el$" f) (load f)))
-            (directory-files (file-name-directory test-directory) t))
+    (dolist (f (directory-files (file-name-directory test-directory) t))
+      (when (string-match-p "-tests.el$" f) (load f)))
     (ert-run-tests-interactively "rvm-.*")))
 
 ;;;; TODO: take buffer switching into account
