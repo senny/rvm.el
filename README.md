@@ -47,3 +47,5 @@ Please register a new issue.
 4. Push to your branch - `git push origin my_branch`
 5. Send me a pull-request for your topic branch
 6. That's it!
+
+[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/1d29c9887166f4a171a86d895a548c61 "githalytics.com")](http://githalytics.com/senny/rvm.el)
