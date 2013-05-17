@@ -37,10 +37,10 @@
 
 (require 'ert)
 
-(defun get-string-from-file (filePath)
+(defun get-string-from-file (file-path)
   "Return FILEPATH's file content."
   (with-temp-buffer
-    (insert-file-contents filePath)
+    (insert-file-contents file-path)
     (buffer-string)))
 
 (defun get-rvm-stub (name)

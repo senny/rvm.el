@@ -60,17 +60,17 @@
   :group 'rvm
   :type 'string)
 
-(defcustom rvm-configuration-ruby-version-file-name
+(defvar rvm-configuration-ruby-version-file-name
   ".ruby-version"
-  "Ruby version configuration file name"
-  :group 'rvm
-  :type 'string)
+  "Ruby version configuration file name")
 
-(defcustom rvm-configuration-ruby-gemset-file-name
+(defvar rvm-configuration-ruby-gemset-file-name
   ".ruby-gemset"
-  "Ruby version configuration file name"
-  :group 'rvm
-  :type 'string)
+  "Ruby version configuration file name")
+
+(defvar rvm-configuration-gemfile-file-name
+  "Gemfile"
+  "Gemfile file name")
 
 (defcustom rvm-interactive-completion-function
   (if ido-mode 'ido-completing-read 'completing-read)
@@ -109,6 +109,12 @@ This path gets added to the PATH variable and the exec-path list.")
 
 (defvar rvm--gemset-list-regexp "\s*\\(=>\\)?\s*\\(.+?\\)\s*$"
   "regular expression to parse the gemset from the 'rvm gemset list' output")
+
+(defvar rvm--gemfile-parse-ruby-regexp "\\#ruby=\\(.+\\)"
+  "regular expression to parse the ruby version from the Gemfile")
+
+(defvar rvm--gemfile-parse-gemset-regexp "#ruby-gemset=\\(.+\\)"
+  "regular expression to parse the ruby gemset from the Gemfile")
 
 (defvar rvm--rvmrc-parse-regexp (concat "\\(?:^rvm\s+\\(?:use\s+\\|\\)\\|environment_id=\"\\)\s*"
                                         "\\(?:--.+\s\\)*" ;; Flags
@@ -149,7 +155,7 @@ If no .rvmrc file is found, the default ruby is used insted."
   (when (rvm-working-p)
     (let ((config-file-path nil)
           (config-gemset-file-path nil)
-          (rvmrc-info (or (rvm--load-info-rvmrc) (rvm--load-info-ruby-version))))
+          (rvmrc-info (or (rvm--load-info-rvmrc) (rvm--load-info-ruby-version) (rvm--load-info-gemfile))))
       (if rvmrc-info (rvm-use (first rvmrc-info) (second rvmrc-info))
         (rvm-use-default)))))
 
@@ -168,6 +174,12 @@ If no .rvmrc file is found, the default ruby is used insted."
                   (chomp (rvm--get-string-from-file gemset-file-path))
                 rvm--gemset-default))
       nil)))
+
+(defun rvm--load-info-gemfile ()
+  (let ((config-file-path (rvm--locate-file rvm-configuration-gemfile-file-name)))
+        (if config-file-path
+            (rvm--gemfile-read-version config-file-path)
+          nil)))
 
 ;;;###autoload
 (defun rvm-use (new-ruby new-gemset)
@@ -328,10 +340,22 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm--rvmrc-read-version (path-to-rvmrc)
   (rvm--rvmrc-parse-version (rvm--get-string-from-file path-to-rvmrc)))
 
+(defun rvm--gemfile-read-version (path-to-gemfile)
+  (rvm--gemfile-parse-version (rvm--get-string-from-file path-to-gemfile)))
+
 (defun rvm--rvmrc-parse-version (rvmrc-line)
   (when (string-match rvm--rvmrc-parse-regexp rvmrc-line)
     (list (rvm--string-trim (match-string 1 rvmrc-line))
           (rvm--string-trim (or (match-string 2 rvmrc-line) rvm--gemset-default)))))
+
+(defun rvm--gemfile-parse-version (gemfile-line)
+  (let ((ruby-version (when (string-match rvm--gemfile-parse-ruby-regexp gemfile-line)
+                       (match-string 1 gemfile-line)))
+    (ruby-gemset (when (string-match rvm--gemfile-parse-gemset-regexp gemfile-line)
+                   (match-string 1 gemfile-line))))
+    (if ruby-version
+        (list ruby-version (or ruby-gemset rvm--gemset-default))
+      nil)))
 
 (defun rvm--gem-binary-path-from-gem-path (gempath)
   (let ((gem-paths (split-string gempath ":")))
