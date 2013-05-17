@@ -60,6 +60,18 @@
   :group 'rvm
   :type 'string)
 
+(defcustom rvm-configuration-ruby-version-file-name
+  ".ruby-version"
+  "Ruby version configuration file name"
+  :group 'rvm
+  :type 'string)
+
+(defcustom rvm-configuration-ruby-gemset-file-name
+  ".ruby-gemset"
+  "Ruby version configuration file name"
+  :group 'rvm
+  :type 'string)
+
 (defcustom rvm-interactive-completion-function
   (if ido-mode 'ido-completing-read 'completing-read)
   "The function which is used by rvm.el to interactivly complete user input"
@@ -135,10 +147,27 @@ If no .rvmrc file is found, the default ruby is used insted."
   (interactive)
 
   (when (rvm-working-p)
-   (let* ((rvmrc-path (rvm--rvmrc-locate))
-          (rvmrc-info (if rvmrc-path (rvm--rvmrc-read-version rvmrc-path) nil)))
-     (if rvmrc-info (rvm-use (first rvmrc-info) (second rvmrc-info))
-       (rvm-use-default)))))
+    (let ((config-file-path nil)
+          (config-gemset-file-path nil)
+          (rvmrc-info (or (rvm--load-info-rvmrc) (rvm--load-info-ruby-version))))
+      (if rvmrc-info (rvm-use (first rvmrc-info) (second rvmrc-info))
+        (rvm-use-default)))))
+
+(defun rvm--load-info-rvmrc ()
+  (let ((config-file-path (rvm--locate-file rvm-configuration-file-name)))
+    (if config-file-path
+        (rvm--rvmrc-read-version config-file-path)
+      nil)))
+
+(defun rvm--load-info-ruby-version ()
+  (let ((config-file-path (rvm--locate-file rvm-configuration-ruby-version-file-name))
+        (gemset-file-path (rvm--locate-file rvm-configuration-ruby-gemset-file-name)))
+    (if config-file-path
+        (list (chomp (rvm--get-string-from-file config-file-path))
+              (if gemset-file-path
+                  (chomp (rvm--get-string-from-file gemset-file-path))
+                rvm--gemset-default))
+      nil)))
 
 ;;;###autoload
 (defun rvm-use (new-ruby new-gemset)
@@ -286,20 +315,18 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm--set-ruby (ruby-binary)
   (rvm--change-path 'rvm--current-ruby-binary-path (list ruby-binary)))
 
-(defun rvm--rvmrc-locate (&optional path)
-  "searches the directory tree for an .rvmrc configuration file"
-  (when (null path) (setq path default-directory))
-  (cond
-   ((equal (expand-file-name path) (expand-file-name "~")) nil)
-   ((equal (expand-file-name path) "/") nil)
-   ((member rvm-configuration-file-name (directory-files path))
-    (concat (expand-file-name path) "/" rvm-configuration-file-name))
-   (t (rvm--rvmrc-locate (concat (file-name-as-directory path) "..")))))
+(defun rvm--locate-file (file-name)
+  "searches the directory tree for an given file. Returns nil if the file was not found."
+  (let ((directory (locate-dominating-file (expand-file-name (or buffer-file-name "")) file-name)))
+    (when directory (concat directory "/" file-name))))
+
+(defun rvm--get-string-from-file (file-path)
+  (with-temp-buffer
+    (insert-file-contents file-path)
+    (buffer-string)))
 
 (defun rvm--rvmrc-read-version (path-to-rvmrc)
-  (with-temp-buffer
-    (insert-file-contents path-to-rvmrc)
-    (rvm--rvmrc-parse-version (buffer-string))))
+  (rvm--rvmrc-parse-version (rvm--get-string-from-file path-to-rvmrc)))
 
 (defun rvm--rvmrc-parse-version (rvmrc-line)
   (when (string-match rvm--rvmrc-parse-regexp rvmrc-line)
