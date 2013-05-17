@@ -302,9 +302,10 @@ If no .rvmrc file is found, the default ruby is used insted."
     (rvm--rvmrc-parse-version (buffer-string))))
 
 (defun rvm--rvmrc-parse-version (rvmrc-line)
-  (when (string-match rvm--rvmrc-parse-regexp rvmrc-line)
-    (list (rvm--string-trim (match-string 1 rvmrc-line))
-          (rvm--string-trim (or (match-string 2 rvmrc-line) rvm--gemset-default)))))
+  (let ((rvmrc-without-comments (replace-regexp-in-string "#.*$" "" rvmrc-line)))
+    (when (string-match rvm--rvmrc-parse-regexp rvmrc-without-comments)
+      (list (rvm--string-trim (match-string 1 rvmrc-without-comments))
+            (rvm--string-trim (or (match-string 2 rvmrc-without-comments) rvm--gemset-default))))))
 
 (defun rvm--gem-binary-path-from-gem-path (gempath)
   (let ((gem-paths (split-string gempath ":")))

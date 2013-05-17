@@ -123,3 +123,10 @@ fi
 
 # Something")
                  '("1.9.2" "project"))))
+
+(ert-deftest rvm-read-version-removes-comments ()
+  (should (equal (rvm--rvmrc-parse-version "# comment 1
+rvm --create ruby-1.9.2-head@rails3 # comment 2
+# comment 3
+")
+                 '("ruby-1.9.2-head" "rails3"))))
