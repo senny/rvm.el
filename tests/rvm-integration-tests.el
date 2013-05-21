@@ -37,10 +37,10 @@
 
 (require 'ert)
 
-(defun get-string-from-file (filePath)
+(defun get-string-from-file (file-path)
   "Return FILEPATH's file content."
   (with-temp-buffer
-    (insert-file-contents filePath)
+    (insert-file-contents file-path)
     (buffer-string)))
 
 (defun get-rvm-stub (name)
@@ -66,7 +66,11 @@
      ((and (string= command "info") (string= arg1 "ruby-1.8.7-p249@experimental"))
       (get-rvm-stub "ruby-1.8.7-p249@experimental_rvm_info"))
      ((and (string= command "info") (string= arg1 "ruby-1.8.7-p249"))
-      (get-rvm-stub "ruby-1.8.7-p249_rvm_info")))))
+      (get-rvm-stub "ruby-1.8.7-p249_rvm_info"))
+     ((and (string= command "info") (string= arg1 "1.9.2-head@rails3"))
+      (get-rvm-stub "ruby-1.9.2-head@rails3_rvm_info"))
+     ((and (string= command "info") (string= arg1 "1.8.7-p249@experimental"))
+      (get-rvm-stub "ruby-1.8.7-p249@experimental_rvm_info")))))
 
 (defun should-be-rvm-environment (ruby-binaries gemhome gempath)
   (should (equal (rvm--emacs-ruby-binary) ruby-binaries))
@@ -120,10 +124,30 @@
 
 (ert-deftest rvm-test-activate-corresponding-ruby ()
   (rvm-test-environment (lambda ()
-                          (cd (file-name-directory (symbol-file 'get-rvm-stub)))
+                          (cd (concat (file-name-directory (symbol-file 'get-rvm-stub)) "/" "rvmrc"))
                           (rvm-activate-corresponding-ruby)
                           (should-be-rvm-environment
                            '("/Users/senny/.rvm/rubies/ruby-1.9.2-head/bin/")
                            "/Users/senny/.rvm/gems/ruby-1.9.2-head@rails3"
                            "/Users/senny/.rvm/gems/ruby-1.9.2-head@rails3:/Users/senny/.rvm/gems/ruby-1.9.2-head@global")
+                          )))
+
+(ert-deftest rvm-test-activate-corresponding-ruby-with-ruby-version ()
+  (rvm-test-environment (lambda ()
+                          (cd (concat (file-name-directory (symbol-file 'get-rvm-stub)) "/" "ruby-version"))
+                          (rvm-activate-corresponding-ruby)
+                          (should-be-rvm-environment
+                           '("/Users/senny/.rvm/rubies/ruby-1.9.2-head/bin/")
+                           "/Users/senny/.rvm/gems/ruby-1.9.2-head@rails3"
+                           "/Users/senny/.rvm/gems/ruby-1.9.2-head@rails3:/Users/senny/.rvm/gems/ruby-1.9.2-head@global")
+                          )))
+
+(ert-deftest rvm-test-activate-corresponding-ruby-with-gemfile ()
+  (rvm-test-environment (lambda ()
+                          (cd (concat (file-name-directory (symbol-file 'get-rvm-stub)) "/" "bundler"))
+                          (rvm-activate-corresponding-ruby)
+                          (should-be-rvm-environment
+                           '("/Users/senny/.rvm/rubies/ruby-1.8.7-p249/bin/")
+                           "/Users/senny/.rvm/gems/ruby-1.8.7-p249@experimental"
+                           "/Users/senny/.rvm/gems/ruby-1.8.7-p249@experimental:/Users/senny/.rvm/gems/ruby-1.8.7-p249@global")
                           )))
