@@ -84,6 +84,12 @@
   :group 'rvm
   :type 'function)
 
+(defvar rvm--current-ruby nil
+  "Current active Ruby version.")
+
+(defvar rvm--current-gemset nil
+  "Current active gemset.")
+
 (defvar rvm--gemset-default "global"
   "the default gemset per ruby interpreter")
 
@@ -159,15 +165,15 @@ If no .rvmrc file is found, the default ruby is used insted."
       (if rvmrc-info (rvm-use (first rvmrc-info) (second rvmrc-info))
         (rvm-use-default)))))
 
-(defun rvm--load-info-rvmrc ()
-  (let ((config-file-path (rvm--locate-file rvm-configuration-file-name)))
+(defun rvm--load-info-rvmrc (&optional path)
+  (let ((config-file-path (rvm--locate-file rvm-configuration-file-name path)))
     (if config-file-path
         (rvm--rvmrc-read-version config-file-path)
       nil)))
 
-(defun rvm--load-info-ruby-version ()
-  (let ((config-file-path (rvm--locate-file rvm-configuration-ruby-version-file-name))
-        (gemset-file-path (rvm--locate-file rvm-configuration-ruby-gemset-file-name)))
+(defun rvm--load-info-ruby-version (&optional path)
+  (let ((config-file-path (rvm--locate-file rvm-configuration-ruby-version-file-name path))
+        (gemset-file-path (rvm--locate-file rvm-configuration-ruby-gemset-file-name path)))
     (if config-file-path
         (list (chomp (rvm--get-string-from-file config-file-path))
               (if gemset-file-path
@@ -175,8 +181,8 @@ If no .rvmrc file is found, the default ruby is used insted."
                 rvm--gemset-default))
       nil)))
 
-(defun rvm--load-info-gemfile ()
-  (let ((config-file-path (rvm--locate-file rvm-configuration-gemfile-file-name)))
+(defun rvm--load-info-gemfile (&optional path)
+  (let ((config-file-path (rvm--locate-file rvm-configuration-gemfile-file-name path)))
         (if config-file-path
             (rvm--gemfile-read-version config-file-path)
           nil)))
@@ -196,6 +202,8 @@ If no .rvmrc file is found, the default ruby is used insted."
           (new-ruby-binary (cdr (assoc "ruby" ruby-info)))
           (new-ruby-gemhome (cdr (assoc "GEM_HOME" ruby-info)))
           (new-ruby-gempath (cdr (assoc "GEM_PATH" ruby-info))))
+     (setq rvm--current-ruby new-ruby)
+     (setq rvm--current-gemset new-gemset)
      (rvm--set-ruby (file-name-directory new-ruby-binary))
      (rvm--set-gemhome new-ruby-gemhome new-ruby-gempath new-gemset))
    (message (concat "Ruby: " new-ruby " Gemset: " new-gemset))))
@@ -213,6 +221,23 @@ If no .rvmrc file is found, the default ruby is used insted."
           (persp-switch gem-name)))
       (rvm--find-file gem-dir))))
 
+(defun rvm-activate-ruby-for (path &optional callback)
+  "Activate Ruby for PATH.
+
+If CALLBACK is specified, active Ruby for PATH only in that
+function."
+  (let* ((path (directory-file-name path))
+         (prev-ruby rvm--current-ruby)
+         (prev-gemset rvm--current-gemset)
+         (rvmrc-info
+          (or
+           (rvm--load-info-rvmrc path)
+           (rvm--load-info-ruby-version path)
+           (rvm--load-info-gemfile path))))
+    (apply 'rvm-use rvmrc-info)
+    (when callback
+      (funcall callback)
+      (rvm-use prev-ruby prev-gemset))))
 
 ;;;; TODO: take buffer switching into account
 (defun rvm-autodetect-ruby ()
@@ -318,10 +343,10 @@ If no .rvmrc file is found, the default ruby is used insted."
 (defun rvm--set-ruby (ruby-binary)
   (rvm--change-path 'rvm--current-ruby-binary-path (list ruby-binary)))
 
-(defun rvm--locate-file (file-name)
+(defun rvm--locate-file (file-name &optional path)
   "searches the directory tree for an given file. Returns nil if the file was not found."
-  (let ((directory (locate-dominating-file (expand-file-name (or buffer-file-name "")) file-name)))
-    (when directory (concat directory "/" file-name))))
+  (let ((directory (locate-dominating-file (or path (expand-file-name (or buffer-file-name ""))) file-name)))
+    (when directory (expand-file-name file-name directory))))
 
 (defun rvm--get-string-from-file (file-path)
   (with-temp-buffer
