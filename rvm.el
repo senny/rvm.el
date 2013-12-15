@@ -213,15 +213,6 @@ If no .rvmrc file is found, the default ruby is used insted."
           (persp-switch gem-name)))
       (rvm--find-file gem-dir))))
 
-(defun rvm-run-tests ()
-  "run the complete test suite for rvm.el"
-  (interactive)
-  (let* ((test-directory (concat (file-name-directory
-                                  (symbol-file 'rvm-run-tests)) "tests/"))
-         (current-dir default-directory))
-    (dolist (f (directory-files (file-name-directory test-directory) t))
-      (when (string-match-p "-tests.el$" f) (load f)))
-    (ert-run-tests-interactively "rvm-.*")))
 
 ;;;; TODO: take buffer switching into account
 (defun rvm-autodetect-ruby ()

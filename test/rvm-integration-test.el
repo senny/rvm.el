@@ -32,11 +32,6 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
-
-(require 'ert)
-
 (defun get-string-from-file (file-path)
   "Return FILEPATH's file content."
   (with-temp-buffer
