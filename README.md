@@ -42,10 +42,13 @@ Please register a new issue.
 ### Fixed something?
 
 1. Fork rvm.el
-2. Create a topic branch - `git checkout -b my_branch`
-3. Make your changes and update the History.txt file
-4. Push to your branch - `git push origin my_branch`
-5. Send me a pull-request for your topic branch
-6. That's it!
+2. Install [Cask](http://cask.github.io/installation)
+3. Install dependencies - `cask install`
+4. Create a topic branch - `git checkout -b my_branch`
+5. Make your changes and update the History.txt file
+6. Run the tests - `make test`
+7. Push to your branch - `git push origin my_branch`
+8. Send me a pull-request for your topic branch
+9. That's it!
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/1d29c9887166f4a171a86d895a548c61 "githalytics.com")](http://githalytics.com/senny/rvm.el)
