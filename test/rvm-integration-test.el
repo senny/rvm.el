@@ -172,3 +172,12 @@
          "/Users/senny/.rvm/gems/ruby-2.0.0-p195@awesome"
          "/Users/senny/.rvm/gems/ruby-2.0.0-p195@awesome:/Users/senny/.rvm/gems/ruby-2.0.0-p195@global")))
      (should-be-default-rvm-environment))))
+
+(ert-deftest rvm-test-activate-ruby-for-path-with-callback-that-errors ()
+  (rvm-test-environment
+   (lambda ()
+     (should-error
+      (rvm-activate-ruby-for
+       (f-join rvm-test/test-path "project")
+       (lambda () (error "BooM"))))
+     (should-be-default-rvm-environment))))

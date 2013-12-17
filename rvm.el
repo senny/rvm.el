@@ -236,8 +236,9 @@ function."
            (rvm--load-info-gemfile path))))
     (apply 'rvm-use rvmrc-info)
     (when callback
-      (funcall callback)
-      (rvm-use prev-ruby prev-gemset))))
+      (unwind-protect
+          (funcall callback)
+        (rvm-use prev-ruby prev-gemset)))))
 
 ;;;; TODO: take buffer switching into account
 (defun rvm-autodetect-ruby ()
