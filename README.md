@@ -17,7 +17,7 @@ Just drop rvm.el in your load-path and put the following in your .emacs
 
 Usage
 -----
-Just call the interactive function `rvm-activate-corresponding-ruby` and rvm.el will change Emacs to use the right ruby version for the file in the current buffer. Remember that the new ruby version will be used for the whole Emacs session and not just the current file. If you want to switch to another ruby version manualy you can call `rvm-use` instead.
+Just call the interactive function `rvm-activate-corresponding-ruby` and rvm.el will change Emacs to use the right ruby version for the file in the current buffer. Remember that the new ruby version will be used for the whole Emacs session and not just the current file. If you want to switch to another ruby version manualy you can call `rvm-use` instead. See `rvm-activate-ruby-for` to activate for a specific path.
 
 Please note that using system-ruby is not supported in rvm.el
 
@@ -42,10 +42,13 @@ Please register a new issue.
 ### Fixed something?
 
 1. Fork rvm.el
-2. Create a topic branch - `git checkout -b my_branch`
-3. Make your changes and update the History.txt file
-4. Push to your branch - `git push origin my_branch`
-5. Send me a pull-request for your topic branch
-6. That's it!
+2. Install [Cask](http://cask.github.io/installation)
+3. Install dependencies - `cask install`
+4. Create a topic branch - `git checkout -b my_branch`
+5. Make your changes and update the History.txt file
+6. Run the tests - `make test`
+7. Push to your branch - `git push origin my_branch`
+8. Send me a pull-request for your topic branch
+9. That's it!
 
 [![githalytics.com alpha](https://cruel-carlota.pagodabox.com/1d29c9887166f4a171a86d895a548c61 "githalytics.com")](http://githalytics.com/senny/rvm.el)
