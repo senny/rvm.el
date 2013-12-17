@@ -17,7 +17,7 @@ Just drop rvm.el in your load-path and put the following in your .emacs
 
 Usage
 -----
-Just call the interactive function `rvm-activate-corresponding-ruby` and rvm.el will change Emacs to use the right ruby version for the file in the current buffer. Remember that the new ruby version will be used for the whole Emacs session and not just the current file. If you want to switch to another ruby version manualy you can call `rvm-use` instead.
+Just call the interactive function `rvm-activate-corresponding-ruby` and rvm.el will change Emacs to use the right ruby version for the file in the current buffer. Remember that the new ruby version will be used for the whole Emacs session and not just the current file. If you want to switch to another ruby version manualy you can call `rvm-use` instead. See `rvm-activate-ruby-for` to activate for a specific path.
 
 Please note that using system-ruby is not supported in rvm.el
 
