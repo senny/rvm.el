@@ -1,0 +1,38 @@
+
+system:
+  uname:        "Darwin ymac.local 10.4.0 Darwin Kernel Version 10.4.0: Fri Apr 23 18:28:53 PDT 2010; root:xnu-1504.7.4~1/RELEASE_I386 i386"
+  shell:        "zsh"
+  version:     "4.3.9"
+
+rvm:
+  type:         "rvm is a shell function"
+  version:      "rvm 0.1.27 by Wayne E. Seguin (wayneeseguin@gmail.com) [http://rvm.beginrescueend.com/]"
+
+ruby:
+  interpreter:  "ruby"
+  version:      "2.0.0p195"
+  date:         "2013-05-14"
+  platform:     "x86_64-darwin12.4.0"
+  patchlevel:   "2013-05-14 revision 40734"
+  full_version: "ruby 2.0.0p195 (2013-05-14 revision 40734) [x86_64-darwin12.4.0]"
+
+homes:
+  gem:          "/Users/senny/.rvm/gems/ruby-2.0.0-p195@awesome"
+  ruby:         "/Users/senny/.rvm/rubies/ruby-2.0.0-p195"
+
+binaries:
+  ruby:         "/Users/senny/.rvm/rubies/ruby-2.0.0-p195/bin/ruby"
+  irb:          "/Users/senny/.rvm/rubies/ruby-2.0.0-p195/bin/irb"
+  gem:          "/Users/senny/.rvm/rubies/ruby-2.0.0-p195/bin/gem"
+  rake:         "/Users/senny/.rvm/gems/ruby-2.0.0-p195@global/bin/rake"
+
+environment:
+  PATH:         "/Users/senny/.rvm/gems/ruby-2.0.0-p195@awesome/bin:/Users/senny/.rvm/gems/ruby-2.0.0-p195@global/bin:/Users/rejeep/.rvm/rubies/ruby-2.0.0-p195/bin:/Users/rejeep/.rvm/bin:/Users/rejeep/.nvm/v0.10.0/bin:/Users/rejeep/Code/tools/bin:/Users/rejeep/Code/evm/bin:/Users/rejeep/Code/cask/bin:/usr/local/share/python:/usr/local/sbin:/usr/local/bin:/usr/local/share/npm/bin:~/.rvm/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/texbin"
+  GEM_HOME:     "/Users/senny/.rvm/gems/ruby-2.0.0-p195@awesome"
+  GEM_PATH:     "/Users/senny/.rvm/gems/ruby-2.0.0-p195@awesome:/Users/senny/.rvm/gems/ruby-2.0.0-p195@global"
+  MY_RUBY_HOME: "/Users/senny/.rvm/rubies/ruby-2.0.0-p195"
+  IRBRC:        "/Users/senny/.rvm/rubies/ruby-2.0.0-p195/.irbrc"
+  RUBYOPT:      ""
+  gemset:       "awesome"
+
+
