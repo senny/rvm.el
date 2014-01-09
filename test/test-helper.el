@@ -6,6 +6,8 @@
 (defvar rvm-test/root-path
   (f-parent rvm-test/test-path))
 
+(setq rvm-verbose nil)
+
 (eval-when-compile
   (require 'cl))
 

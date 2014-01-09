@@ -60,6 +60,11 @@
   :group 'rvm
   :type 'string)
 
+(defcustom rvm-verbose t
+  "If true, RVM will print messages for various tasks."
+  :group 'rvm
+  :type 'boolean)
+
 (defvar rvm-configuration-ruby-version-file-name
   ".ruby-version"
   "Ruby version configuration file name")
@@ -142,6 +147,11 @@ when no gemset is set, the second group is nil")
   (let ((s (if (symbolp str) (symbol-name str) str)))
     (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" s)))
 
+(defun rvm--message (format-string &rest objects)
+  "Like `message', but will only print if `rvm-verbose' is true."
+  (when rvm-verbose
+    (apply 'message (cons format-string objects))))
+
 ;; Application Code
 
 ;;;###autoload
@@ -206,7 +216,7 @@ If no .rvmrc file is found, the default ruby is used insted."
      (setq rvm--current-gemset new-gemset)
      (rvm--set-ruby (file-name-directory new-ruby-binary))
      (rvm--set-gemhome new-ruby-gemhome new-ruby-gempath new-gemset))
-   (message (concat "Ruby: " new-ruby " Gemset: " new-gemset))))
+   (rvm--message (concat "Ruby: " new-ruby " Gemset: " new-gemset))))
 
 ;;;###autoload
 (defun rvm-open-gem (gemhome)
@@ -245,13 +255,13 @@ function."
   (interactive)
   (when (rvm-working-p)
     (add-hook 'ruby-mode-hook 'rvm-activate-corresponding-ruby)
-    (message "rvm.el is now autodetecting the ruby version")))
+    (rvm--message "rvm.el is now autodetecting the ruby version")))
 
 (defun rvm-autodetect-ruby-stop ()
   (interactive)
   (when (rvm-working-p)
     (remove-hook 'ruby-mode-hook 'rvm-activate-corresponding-ruby)
-    (message "stopped rvm.el from autodetecting ruby versions")))
+    (rvm--message "stopped rvm.el from autodetecting ruby versions")))
 
 (defun rvm/list (&optional default-ruby)
   (let ((rubies (rvm--call-process "list" (when default-ruby "default")))
@@ -407,7 +417,7 @@ function."
                     (point-min) (point-max))))
       (if (= 0 success)
           output
-        (message output)))))
+        (rvm--message output)))))
 
 (defun rvm-gem-install (gem)
   "Install GEM into the currently active RVM Gemset."
