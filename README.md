@@ -21,6 +21,8 @@ Just call the interactive function `rvm-activate-corresponding-ruby` and rvm.el 
 
 Please note that using system-ruby is not supported in rvm.el
 
+RVM will by default print messages when switching environment. You can disable all messages by setting `rvm-verbose` to `nil`.
+
 Read about rvm.el
 -----------------
 If you want to read what people have written about rvm.el, this section links you to the relevant blog posts:
