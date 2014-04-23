@@ -171,31 +171,9 @@ If no .rvmrc file is found, the default ruby is used insted."
   (when (rvm-working-p)
     (let ((config-file-path nil)
           (config-gemset-file-path nil)
-          (rvmrc-info (or (rvm--load-info-rvmrc) (rvm--load-info-ruby-version) (rvm--load-info-gemfile))))
+          (rvmrc-info (rvm--find-rc-info)))
       (if rvmrc-info (rvm-use (first rvmrc-info) (second rvmrc-info))
         (rvm-use-default)))))
-
-(defun rvm--load-info-rvmrc (&optional path)
-  (let ((config-file-path (rvm--locate-file rvm-configuration-file-name path)))
-    (if config-file-path
-        (rvm--rvmrc-read-version config-file-path)
-      nil)))
-
-(defun rvm--load-info-ruby-version (&optional path)
-  (let ((config-file-path (rvm--locate-file rvm-configuration-ruby-version-file-name path))
-        (gemset-file-path (rvm--locate-file rvm-configuration-ruby-gemset-file-name path)))
-    (if config-file-path
-        (list (chomp (rvm--get-string-from-file config-file-path))
-              (if gemset-file-path
-                  (chomp (rvm--get-string-from-file gemset-file-path))
-                rvm--gemset-default))
-      nil)))
-
-(defun rvm--load-info-gemfile (&optional path)
-  (let ((config-file-path (rvm--locate-file rvm-configuration-gemfile-file-name path)))
-        (if config-file-path
-            (rvm--gemfile-read-version config-file-path)
-          nil)))
 
 ;;;###autoload
 (defun rvm-use (new-ruby new-gemset)
@@ -239,11 +217,7 @@ function."
   (let* ((path (directory-file-name path))
          (prev-ruby rvm--current-ruby)
          (prev-gemset rvm--current-gemset)
-         (rvmrc-info
-          (or
-           (rvm--load-info-rvmrc path)
-           (rvm--load-info-ruby-version path)
-           (rvm--load-info-gemfile path))))
+         (rvmrc-info (rvm--find-rc-info path)))
     (apply 'rvm-use rvmrc-info)
     (when callback
       (unwind-protect
@@ -351,13 +325,73 @@ function."
     (setq eshell-path-env (getenv "PATH"))
     (set current-binary-var new-binaries)))
 
+(defun rvm--find-rc-info (&optional path)
+  (let* ((cfiles (list rvm-configuration-file-name rvm-configuration-ruby-version-file-name rvm-configuration-gemfile-file-name))
+	 (path (or path (expand-file-name (or buffer-file-name ""))))
+	 (winner (rvm--locate-dominating-file
+		  path
+		  (lambda (dir)
+		    (when
+			(delq nil (mapcar
+				   (lambda (file)
+				     (file-exists-p (concat dir "/" file)))
+				   cfiles))
+		      t))))
+	 config-file-path)
+    (cond
+     ((not winner)
+      nil)
+     ((file-exists-p (setq config-file-path (concat winner rvm-configuration-file-name)))
+      (rvm--rvmrc-read-version config-file-path))
+     ((file-exists-p (setq config-file-path (concat winner rvm-configuration-ruby-version-file-name)))
+      (list (chomp (rvm--get-string-from-file config-file-path))
+	    (if (file-exists-p (setq config-file-path (concat winner rvm-configuration-ruby-gemset-file-name)))
+		(chomp (rvm--get-string-from-file config-file-path))
+	      rvm--gemset-default)))
+     ((file-exists-p (setq config-file-path (concat winner rvm-configuration-gemfile-file-name)))
+      (rvm--gemfile-read-version config-file-path)))))
+
+(defun rvm--locate-dominating-file (file name)
+  "Look up the directory hierarchy from FILE for a directory containing NAME.
+Stop at the first parent directory containing a file NAME,
+and return the directory.  Return nil if not found.
+Instead of a string, NAME can also be a predicate taking one argument
+\(a directory) and returning a non-nil value if that directory is the one for
+which we're looking."
+  ;; Heisted from files.el:24.3.50.2.
+  ;; Represent /home/luser/foo as ~/foo so that we don't try to look for
+  ;; `name' in /home or in /.
+  (setq file (abbreviate-file-name file))
+  (let ((root nil)
+        ;; `user' is not initialized outside the loop because
+        ;; `file' may not exist, so we may have to walk up part of the
+        ;; hierarchy before we find the "initial UID".  Note: currently unused
+        ;; (user nil)
+        try)
+    (while (not (or root
+                    (null file)
+                    ;; FIXME: Disabled this heuristic because it is sometimes
+                    ;; inappropriate.
+                    ;; As a heuristic, we stop looking up the hierarchy of
+                    ;; directories as soon as we find a directory belonging
+                    ;; to another user.  This should save us from looking in
+                    ;; things like /net and /afs.  This assumes that all the
+                    ;; files inside a project belong to the same user.
+                    ;; (let ((prev-user user))
+                    ;;   (setq user (nth 2 (file-attributes file)))
+                    ;;   (and prev-user (not (equal user prev-user))))
+                    (string-match locate-dominating-stop-dir-regexp file)))
+      (setq try (if (stringp name)
+                    (file-exists-p (expand-file-name name file))
+                  (funcall name file)))
+      (cond (try (setq root file))
+            ((equal file (setq file (file-name-directory
+                                     (directory-file-name file))))
+             (setq file nil))))
+    (if root (file-name-as-directory root))))
+
 (defun rvm--set-ruby (ruby-binary)
   (rvm--change-path 'rvm--current-ruby-binary-path (list ruby-binary)))
-
-(defun rvm--locate-file (file-name &optional path)
-  "searches the directory tree for an given file. Returns nil if the file was not found."
-  (let ((directory (locate-dominating-file (or path (expand-file-name (or buffer-file-name ""))) file-name)))
-    (when directory (expand-file-name file-name directory))))
 
 (defun rvm--get-string-from-file (file-path)
   (with-temp-buffer

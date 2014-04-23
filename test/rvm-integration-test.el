@@ -181,3 +181,15 @@
        (f-join rvm-test/test-path "project")
        (lambda () (error "BooM"))))
      (should-be-default-rvm-environment))))
+
+(ert-deftest rvm-test-activate-corresponding-ruby-with-gemfile-closer-than-rvmrc ()
+  (rvm-test-environment (lambda ()
+                          (cd (concat (file-name-directory
+				       (symbol-file 'get-rvm-stub))
+				      "/" "rvmrc" "/" "elsewhere"))
+                          (rvm-activate-corresponding-ruby)
+                          (should-be-rvm-environment
+                           '("/Users/senny/.rvm/rubies/ruby-1.8.7-p249/bin/")
+                           "/Users/senny/.rvm/gems/ruby-1.8.7-p249@experimental"
+                           "/Users/senny/.rvm/gems/ruby-1.8.7-p249@experimental:/Users/senny/.rvm/gems/ruby-1.8.7-p249@global")
+                          )))
