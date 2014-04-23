@@ -60,9 +60,21 @@
   (should (equal (rvm--rvmrc-parse-version "environment_id=\"ruby-1.9.2-p180-patched@something\"")
                  '("ruby-1.9.2-p180-patched" "something"))))
 
-(ert-deftest rvm-unit-test-gemfile-parse-version ()
+(ert-deftest rvm-unit-test-gemfile-parse-version-as-comment ()
   (should (equal (rvm--gemfile-parse-version "#ruby=1.9.3\n#ruby-gemset=foo")
                  '("1.9.3" "foo"))))
+
+(ert-deftest rvm-unit-test-gemfile-parse-version-as-directive-with-single-quotes ()
+  (should (equal (rvm--gemfile-parse-version "ruby '1.9.3'\n#ruby-gemset=foo")
+                 '("1.9.3" "foo"))))
+
+(ert-deftest rvm-unit-test-gemfile-parse-version-as-directive-with-double-quotes ()
+  (should (equal (rvm--gemfile-parse-version "ruby \"1.9.3\"\n#ruby-gemset=foo")
+                 '("1.9.3" "foo"))))
+
+(ert-deftest rvm-unit-test-gemfile-parse-version-reject-directive-with-equals ()
+  (should-not (equal (rvm--gemfile-parse-version "ruby=\"1.9.3\"\n#ruby-gemset=foo")
+		     '("1.9.3" "foo"))))
 
 (ert-deftest rvm-unit-test-gemfile-parse-version-without-gemset ()
   (should (equal (rvm--gemfile-parse-version "#ruby=1.9.3\n")

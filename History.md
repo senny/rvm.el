@@ -25,6 +25,7 @@
 * the exec-path is now set properly
 * gem-home and gem-path are now set using `rvm info` instead of building the paths manually
 * bug-fix in rvm--rvmrc-parse-version which was incorrectly reading some rvmrc files
+* support both Gemfile syntaxes for ruby-version
 
 # 1.1 (16.05.2010)
 
