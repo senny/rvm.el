@@ -109,7 +109,7 @@ This path gets added to the PATH variable and the exec-path list.")
   "reflects the path to the current 'rubygems' executables.
 This path gets added to the PATH variable and the exec-path list.")
 
-(defvar rvm--info-option-regexp "\s+\\(.+\\):\s+\"\\(.+\\)\""
+(defvar rvm--info-option-regexp "\s+\\(.+?\\):\s+\"\\(.+?\\)\""
   "regular expression to parse the options from rvm info")
 
 (defvar rvm--list-ruby-regexp "\s*\\(=?[>\*]\\)?\s*\\(.+?\\)\s*\\[\\(.+\\)\\]\s*$"
