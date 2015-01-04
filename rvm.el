@@ -145,7 +145,7 @@ when no gemset is set, the second group is nil")
 
 ;; Put with other utils
 ;; From http://www.emacswiki.org/emacs/ElispCookbook
-(defun chomp (str)
+(defun rvm--chomp (str)
   "Chomp leading and tailing whitespace from STR."
   (let ((s (if (symbolp str) (symbol-name str) str)))
     (replace-regexp-in-string "\\(^[[:space:]\n]*\\|[[:space:]\n]*$\\)" "" s)))
@@ -188,9 +188,9 @@ If no .rvmrc file is found, the default ruby is used insted."
   (let ((config-file-path (rvm--locate-file rvm-configuration-ruby-version-file-name path))
         (gemset-file-path (rvm--locate-file rvm-configuration-ruby-gemset-file-name path)))
     (if config-file-path
-        (list (chomp (rvm--get-string-from-file config-file-path))
+        (list (rvm--chomp (rvm--get-string-from-file config-file-path))
               (if gemset-file-path
-                  (chomp (rvm--get-string-from-file gemset-file-path))
+                  (rvm--chomp (rvm--get-string-from-file gemset-file-path))
                 rvm--gemset-default))
       nil)))
 
