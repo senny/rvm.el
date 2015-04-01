@@ -5,6 +5,8 @@ rvm.el
 
 This package integrates Emacs with the Ruby Version Manager ( rvm ).
 
+> *NOTE: This project is currently unmaintained. We are looking for a new [maintainer](https://github.com/senny/rvm.el/issues/52).*
+
 Installation
 ------------
 
