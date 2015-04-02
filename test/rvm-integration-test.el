@@ -107,7 +107,7 @@
 
 (ert-deftest rvm-test-rvm/gemset-list ()
   (let* ((result (rvm/gemset-list "ruby-1.9.2-head")))
-    (should (equal result '("experimental" "global" "rails3" "rails3-beta4" "rails3beta")))))
+    (should (equal result '("default" "experimental" "global" "rails3" "rails3-beta4" "rails3beta")))))
 
 (ert-deftest rvm-test-rvm/gemset-list-other-ruby ()
   (let* ((result (rvm/gemset-list "ruby-1.9.3-head")))

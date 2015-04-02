@@ -1,5 +1,6 @@
 
 gemsets for ruby-1.9.2-head (found in /Users/senny/.rvm/gems/ruby-1.9.2-head)
+   (default)
    experimental
 => global
    rails3
@@ -13,4 +14,3 @@ gemsets for ruby-1.9.3-head (found in /Users/senny/.rvm/gems/ruby-1.9.3-head)
 
 gemsets for ruby-2.0.0-p195 (found in /Users/senny/.rvm/gems/ruby-2.0.0-195)
    awesome
-
