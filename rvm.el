@@ -296,7 +296,9 @@ function."
                      ruby-current-version
                      (not filtered-gemset)
                      (string-match rvm--gemset-list-regexp gemset))
-                (add-to-list 'parsed-gemsets (match-string 2 gemset) t))))
+                ;; replace-regexp is to handle default gemset which is returned with
+                ;; wrapping parens but is referred to without them in rvm use command
+                (add-to-list 'parsed-gemsets (replace-regexp-in-string "^(\\|)$" "" (match-string 2 gemset)) t))))
     parsed-gemsets))
 
 (defun rvm/info (&optional ruby-version)
