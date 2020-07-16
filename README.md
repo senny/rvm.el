@@ -27,9 +27,9 @@ Read about rvm.el
 -----------------
 If you want to read what people have written about rvm.el, this section links you to the relevant blog posts:
 
-* [Emacs Reboot #14](http://devblog.avdi.org/2011/10/11/rvm-el-and-inf-ruby-emacs-reboot-14/) by Avdi Grimm
-* [Handle Ruby versions](http://emacsrookie.com/2011/10/01/handle-ruby-versions/) by Samuel Tonini
-* [Emacs tidbits for Ruby developers](http://blog.senny.ch/blog/2012/10/06/emacs-tidbits-for-ruby-developers/) by Yves Senn
+* [Emacs Reboot #14](https://avdi.codes/rvm-el-and-inf-ruby-emacs-reboot-14/) by Avdi Grimm
+* [Handle Ruby versions](http://web.archive.org/web/20161018171345/http://emacsrookie.com/2011/10/01/handle-ruby-versions/) by Samuel Tonini
+* [Emacs tidbits for Ruby developers](http://web.archive.org/web/20190211162443/http://blog.senny.ch/blog/2012/10/06/emacs-tidbits-for-ruby-developers/) by Yves Senn
 
 Community
 ---------
@@ -52,5 +52,3 @@ Please register a new issue.
 7. Push to your branch - `git push origin my_branch`
 8. Send me a pull-request for your topic branch
 9. That's it!
-
-[![githalytics.com alpha](https://cruel-carlota.pagodabox.com/1d29c9887166f4a171a86d895a548c61 "githalytics.com")](http://githalytics.com/senny/rvm.el)
