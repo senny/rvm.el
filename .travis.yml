@@ -1,3 +1,4 @@
+dist: trusty
 language: emacs-lisp
 before_install:
   - curl -fsSkL https://gist.github.com/senny/8003271/raw > travis.sh && source ./travis.sh
