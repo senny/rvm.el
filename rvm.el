@@ -188,10 +188,17 @@ If no .rvmrc file is found, the default ruby is used insted."
   (let ((config-file-path (rvm--locate-file rvm-configuration-ruby-version-file-name path))
         (gemset-file-path (rvm--locate-file rvm-configuration-ruby-gemset-file-name path)))
     (if config-file-path
-        (list (rvm--chomp (rvm--get-string-from-file config-file-path))
-              (if gemset-file-path
-                  (rvm--chomp (rvm--get-string-from-file gemset-file-path))
-                rvm--gemset-default))
+        (let ((ruby-ver (rvm--chomp (rvm--get-string-from-file config-file-path)))
+              (gemset-name (and gemset-file-path
+                                (rvm--chomp (rvm--get-string-from-file gemset-file-path)))))
+          (unless gemset-name
+            ;; Maybe the gemset name is directly stored in the `config-file-path'.
+            (let ((ruby-info (split-string ruby-ver rvm--gemset-separator)))
+              (setq ruby-ver (rvm--chomp (car ruby-info))
+                    gemset-name (or (and (eq (length ruby-info) 2)
+                                         (rvm--chomp (cadr ruby-info)))
+                                    rvm--gemset-default))))
+          (list ruby-ver gemset-name))
       nil)))
 
 (defun rvm--load-info-gemfile (&optional path)
