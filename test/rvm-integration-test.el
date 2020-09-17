@@ -67,7 +67,9 @@
      ((and (string= command "info") (string= arg1 "1.8.7-p249@experimental"))
       (get-rvm-stub "ruby-1.8.7-p249@experimental_rvm_info"))
      ((and (string= command "info") (string= arg1 "ruby-2.0.0-p195@awesome"))
-      (get-rvm-stub "ruby-2.0.0-p195@awesome")))))
+      (get-rvm-stub "ruby-2.0.0-p195@awesome"))
+     ((and (string= command "info") (string= arg1 "ruby-2.6.6"))
+      (get-rvm-stub "ruby-2.6.6")))))
 
 (defun should-be-rvm-environment (ruby-binaries gemhome gempath)
   (should (equal (rvm--emacs-ruby-binary) ruby-binaries))
@@ -136,10 +138,33 @@
   (rvm-test-environment (lambda ()
                           (cd (concat (file-name-directory (symbol-file 'get-rvm-stub)) "/" "ruby-version"))
                           (rvm-activate-corresponding-ruby)
+                          (should (equal (rvm--load-info-ruby-version) '("1.9.2-head" "rails3")))
                           (should-be-rvm-environment
                            '("/Users/senny/.rvm/rubies/ruby-1.9.2-head/bin/")
                            "/Users/senny/.rvm/gems/ruby-1.9.2-head@rails3"
                            "/Users/senny/.rvm/gems/ruby-1.9.2-head@rails3:/Users/senny/.rvm/gems/ruby-1.9.2-head@global")
+                          )))
+
+(ert-deftest rvm-test-activate-corresponding-ruby-with-ruby-version-without-gemset ()
+  (rvm-test-environment (lambda ()
+                          (cd (concat (file-name-directory (symbol-file 'get-rvm-stub)) "/" "ruby-version-without-gemset"))
+                          (rvm-activate-corresponding-ruby)
+                          (should (equal (rvm--load-info-ruby-version) '("ruby-2.6.6" "global")))
+                          (should-be-rvm-environment
+                           '("/home/milouse/.rvm/rubies/ruby-2.6.6/bin/")
+                           "/home/milouse/.rvm/gems/ruby-2.6.6"
+                           "/home/milouse/.rvm/gems/ruby-2.6.6:/home/milouse/.rvm/gems/ruby-2.6.6@global")
+                          )))
+
+(ert-deftest rvm-test-activate-corresponding-ruby-with-ruby-version-containing-gemset ()
+  (rvm-test-environment (lambda ()
+                          (cd (concat (file-name-directory (symbol-file 'get-rvm-stub)) "/" "ruby-version-with-gemset"))
+                          (rvm-activate-corresponding-ruby)
+                          (should (equal (rvm--load-info-ruby-version) '("ruby-2.0.0-p195" "awesome")))
+                          (should-be-rvm-environment
+                           '("/Users/senny/.rvm/rubies/ruby-2.0.0-p195/bin/")
+                           "/Users/senny/.rvm/gems/ruby-2.0.0-p195@awesome"
+                           "/Users/senny/.rvm/gems/ruby-2.0.0-p195@awesome:/Users/senny/.rvm/gems/ruby-2.0.0-p195@global")
                           )))
 
 (ert-deftest rvm-test-activate-corresponding-ruby-with-gemfile ()
