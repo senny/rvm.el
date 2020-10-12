@@ -44,6 +44,10 @@
                          "rvm_stubs/"
                          name)))
 
+(defvar test-fake-bundle-output "")
+(defun rvm--call-bundle-process (args)
+  test-fake-bundle-output)
+
 (defun rvm--call-process (&rest args)
   (let ((command (first args))
         (arg1 (second args)))
@@ -206,3 +210,20 @@
        (f-join rvm-test/test-path "project")
        (lambda () (error "BooM"))))
      (should-be-default-rvm-environment))))
+
+(ert-deftest rvm-test-find-correct-bundle-path ()
+  (let ((test-fake-bundle-output
+         "Settings for `path` in order of priority. The top value will be used
+Set via BUNDLE_PATH: \"/home/milouse/other/path\"
+Set for the current user (/home/milouse/.bundle/config): \"./test/path\""))
+    (should (equal (rvm--emacs-bundlepath) "/home/milouse/other/path"))
+    (rvm-test-environment
+     (lambda ()
+       (should (equal (getenv "BUNDLE_PATH") "/home/milouse/other/path"))))))
+
+(ert-deftest rvm-test-dont-set-bundle-path-if-empty ()
+  (let ((test-fake-bundle-output ""))
+    (should (equal (rvm--emacs-bundlepath) nil))
+    (rvm-test-environment
+     (lambda ()
+       (should (equal (getenv "BUNDLE_PATH") nil))))))
