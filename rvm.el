@@ -344,6 +344,15 @@ function."
 (defun rvm--emacs-gempath ()
   (getenv "GEM_PATH"))
 
+(defun rvm--emacs-bundlepath ()
+  (let ((bundle-config (rvm--call-bundle-process "config path"))
+        (search-start 0)
+        (bundle-paths '()))
+    (while (string-match ": \"\\([^\"]+\\)\"$" bundle-config search-start)
+      (setq search-start (match-end 1))
+      (add-to-list 'bundle-paths (match-string 1 bundle-config) t))
+    (car bundle-paths)))
+
 (defun rvm--change-path (current-binary-var new-binaries)
   (let ((current-binaries-for-path
          (mapconcat 'identity (eval current-binary-var) ":"))
@@ -407,7 +416,7 @@ function."
       (progn
         (setenv "GEM_HOME" gemhome)
         (setenv "GEM_PATH" gempath)
-        (setenv "BUNDLE_PATH" gemhome)
+        (setenv "BUNDLE_PATH" (rvm--emacs-bundlepath))
         (rvm--change-path 'rvm--current-gem-binary-path (rvm--gem-binary-path-from-gem-path gempath)))
     (setenv "GEM_HOME" "")
     (setenv "GEM_PATH" "")
@@ -431,6 +440,11 @@ function."
       (if (= 0 success)
           output
         (rvm--message output)))))
+
+(defun rvm--call-bundle-process (args)
+  (or (and (executable-find "bundle")
+           (shell-command-to-string (concat "bundle " args)))
+      ""))
 
 (defun rvm-gem-install (gem)
   "Install GEM into the currently active RVM Gemset."
