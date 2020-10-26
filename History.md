@@ -1,16 +1,47 @@
 # In Git
 
-[Compare v1.2.0..master](https://github.com/senny/rvm.el/compare/1.2.0...master)
+[Compare v1.4.1..master](https://github.com/senny/rvm.el/compare/v1.4.1...master)
+
+# 1.4.1 (10.26.2020)
+
+[Compare v1.4.1..v1.4.0](https://github.com/senny/rvm.el/compare/v1.4.0...v1.4.1)
 
 ## New Features
 
+* Support gemset name inside .ruby-version file (#57, thanks Étienne Deparis)
+
 ## Bugfixes
 
+* Fix setting of BUNDLE_PATH (#59, thanks Étienne Deparis)
+
+# 1.4.0 (04.02.2015)
+
+[Compare v1.4.0..v1.3.0](https://github.com/senny/rvm.el/compare/v1.3.0...v1.4.0)
+
+## New Features
+
+*  Support for .ruby-version file
+*  Support for rvm/bundler integration
+
+## Bugfixes
+
+* Fix warning from mapcar
 * Fix naming conflict with electric-pair-mode
+* Fix version parsing in .rvmrc
+
+# 1.3.0 (02.10.2013)
+
+[Compare v1.3.0..1.2.0](https://github.com/senny/rvm.el/compare/1.2.0...v1.3.0)
+
+## Bugfixes
+
+* Fix gemset list bug
+* Fix gemset parsing
+* Fix missing usage of rvm-configuration-file-name in rvm--rvmrc-locate
 
 # 1.2.0 (01.02.2012)
 
-[Compare v1.2.0..master](https://github.com/senny/rvm.el/compare/1.1...1.2.0)
+[Compare v1.2.0..1.1](https://github.com/senny/rvm.el/compare/1.1...1.2.0)
 
 ## New Features
 
@@ -31,7 +62,7 @@
 
 # 1.1 (16.05.2010)
 
-[Compare v1.1.0..master](https://github.com/senny/rvm.el/compare/1.0...1.1)
+[Compare v1.1.0..1.0](https://github.com/senny/rvm.el/compare/1.0...1.1)
 
 ## New Features
 

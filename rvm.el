@@ -4,7 +4,7 @@
 
 ;; Author: Yves Senn <yves.senn@gmx.ch>
 ;; URL: http://www.emacswiki.org/emacs/RvmEl
-;; Version: 1.4.0
+;; Version: 1.4.1
 ;; Created: 5 April 2010
 ;; Keywords: ruby rvm
 ;; EmacsWiki: RvmEl
