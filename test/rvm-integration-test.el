@@ -49,8 +49,8 @@
   test-fake-bundle-output)
 
 (defun rvm--call-process (&rest args)
-  (let ((command (first args))
-        (arg1 (second args)))
+  (let ((command (cl-first args))
+        (arg1 (cl-second args)))
     (cond
      ((and (string= command "list") (string= arg1 t))
       (get-rvm-stub "rvm_list_default"))

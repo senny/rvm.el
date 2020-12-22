@@ -1,6 +1,10 @@
 # In Git
 
-[Compare v1.4.1..master](https://github.com/senny/rvm.el/compare/v1.4.1...master)
+[Compare v1.4.2..master](https://github.com/senny/rvm.el/compare/v1.4.2...master)
+
+# 1.4.2 (12.21.2020)
+
+[Compare v1.4.2..v1.4.1](https://github.com/senny/rvm.el/compare/v1.4.1...v1.4.2)
 
 # 1.4.1 (10.26.2020)
 
