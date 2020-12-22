@@ -9,7 +9,7 @@
 (setq rvm-verbose nil)
 
 (eval-when-compile
-  (require 'cl))
+  (require 'cl-lib))
 
 (unless (require 'ert nil 'no-error)
   (require 'ert (f-expand "rvm" rvm-test/test-path)))

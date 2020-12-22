@@ -38,7 +38,7 @@
 
 ;;; Compiler support:
 
-(eval-when-compile (require 'cl))
+(eval-when-compile (require 'cl-lib))
 (defvar eshell-path-env)
 (defvar persp-mode)
 (defvar perspectives-hash)
@@ -175,7 +175,7 @@ If no .rvmrc file is found, the default ruby is used insted."
     (let ((config-file-path nil)
           (config-gemset-file-path nil)
           (rvmrc-info (or (rvm--load-info-rvmrc) (rvm--load-info-ruby-version) (rvm--load-info-gemfile))))
-      (if rvmrc-info (rvm-use (first rvmrc-info) (second rvmrc-info))
+      (if rvmrc-info (rvm-use (cl-first rvmrc-info) (cl-second rvmrc-info))
         (rvm-use-default)))))
 
 (defun rvm--load-info-rvmrc (&optional path)
@@ -293,7 +293,7 @@ function."
          (gemset-lines (split-string gemset-result "\n"))
          (parsed-gemsets (list))
          (ruby-current-version nil))
-    (loop for gemset in gemset-lines do
+    (cl-loop for gemset in gemset-lines do
           (let ((filtered-gemset (string-match rvm--gemset-list-filter-regexp gemset)))
             (if filtered-gemset
                 (if (string-match ruby-version gemset)
@@ -358,7 +358,7 @@ function."
          (mapconcat 'identity (eval current-binary-var) ":"))
         (new-binaries-for-path (mapconcat 'identity new-binaries ":")))
     (if (and (eval current-binary-var)
-             (not (string= (first (eval current-binary-var)) "/bin")))
+             (not (string= (cl-first (eval current-binary-var)) "/bin")))
         (progn
           (setenv "PATH" (replace-regexp-in-string
                           (regexp-quote current-binaries-for-path)
@@ -450,7 +450,7 @@ function."
   "Install GEM into the currently active RVM Gemset."
   (interactive "SGem Install: ")
   (shell-command (format "%s install %s&" ; & executes async
-                         (concat (first rvm--current-ruby-binary-path) "/gem") gem))
+                         (concat (cl-first rvm--current-ruby-binary-path) "/gem") gem))
   (pop-to-buffer "*Async Shell Command*"))
 
 (provide 'rvm)
