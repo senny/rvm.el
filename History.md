@@ -6,6 +6,10 @@
 
 [Compare v1.4.2..v1.4.1](https://github.com/senny/rvm.el/compare/v1.4.1...v1.4.2)
 
+## Bugfixes
+
+* Fix cl deprecation warnings; use cl-lib instead
+
 # 1.4.1 (10.26.2020)
 
 [Compare v1.4.1..v1.4.0](https://github.com/senny/rvm.el/compare/v1.4.0...v1.4.1)
