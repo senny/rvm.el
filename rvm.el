@@ -102,24 +102,24 @@
   "character that separates the ruby version from the gemset.")
 
 (defvar rvm--current-ruby-binary-path nil
-  "reflects the path to the current 'ruby' executable.
+  "reflects the path to the current `ruby' executable.
 This path gets added to the PATH variable and the exec-path list.")
 
 (defvar rvm--current-gem-binary-path nil
-  "reflects the path to the current 'rubygems' executables.
+  "reflects the path to the current `rubygems' executables.
 This path gets added to the PATH variable and the exec-path list.")
 
 (defvar rvm--info-option-regexp "\s+\\(.+?\\):\s+\"\\(.+?\\)\""
   "regular expression to parse the options from rvm info")
 
 (defvar rvm--list-ruby-regexp "\s*\\(=?[>\*]\\)?\s*\\(.+?\\)\s*\\[\\(.+\\)\\]\s*$"
-  "regular expression to parse the ruby version from the 'rvm list' output")
+  "regular expression to parse the ruby version from the `rvm list' output")
 
 (defvar rvm--gemset-list-filter-regexp "^\\(gemsets for\\|Gemset '\\)"
   "regular expression to filter the output of rvm gemset list")
 
 (defvar rvm--gemset-list-regexp "\s*\\(=>\\)?\s*\\(.+?\\)\s*$"
-  "regular expression to parse the gemset from the 'rvm gemset list' output")
+  "regular expression to parse the gemset from the `rvm gemset list' output")
 
 (defvar rvm--gemfile-parse-ruby-regexp-as-comment "\\#ruby=\\(.+\\)"
   "regular expression to parse the ruby version from the Gemfile as comment")
@@ -376,7 +376,8 @@ function."
   (rvm--change-path 'rvm--current-ruby-binary-path (list ruby-binary)))
 
 (defun rvm--locate-file (file-name &optional path)
-  "searches the directory tree for an given file. Returns nil if the file was not found."
+  "searches the directory tree for an given file. Returns nil if the
+file was not found."
   (let ((directory (locate-dominating-file (or path (expand-file-name (or buffer-file-name ""))) file-name)))
     (when directory (expand-file-name file-name directory))))
 
